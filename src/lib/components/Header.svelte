@@ -1,6 +1,7 @@
 <script lang='ts'>
     import Button from '$lib/components/Button.svelte';
 	import { onMount } from 'svelte';
+	import { handleClickOutside } from '$lib/utils/eventHandlers';
 
     let sidebar = $state(false);
 	let currentPath = $state('');
@@ -11,7 +12,7 @@
 	});
 
 	const isActive = (path: string) => {
-		return path === currentPath;
+		return currentPath.includes(path);
 	}
 
 	const handleNavigation = (path: string) => {
@@ -28,10 +29,16 @@
 	}
 </script>
 
+<svelte:window
+	onclick={(e) => {
+		handleClickOutside(e, '.plus-menu-container', () => (sidebar ? (sidebar = false) : sidebar))
+	}}
+/>
+	
 
-<header class='sticky top-0 left-0 bg-blue sm:pt-6 xl:pt-0 w-screen shadow-xl z-20'>
+<header class='sticky top-0 left-0 bg-blue sm:pt-6 xl:pt-0 w-full shadow-xl z-20 overflow-x-hidden'>
 	<nav class='flex justify-between items-center p-2'>
-		<a href="/" class='sm:w-1/3 h-auto mr-5 2xl:w-[10%] 2xl:mx-5' onclick={() => handleNavigation('/')}>
+		<a href="/" class='sm:w-1/3 h-auto mr-5 xl:w-[10%] 2xl:mx-5' onclick={() => handleNavigation('/')}>
 			<img src='/icons/logo.png' alt="Company Logo">
 		</a>
 		<div class='flex flex-row items-center sm:gap-2 2xl:gap-5'>
@@ -133,7 +140,7 @@
 			</a>
 			<Button href="/book" label='Book Appointment' additionalStyling='xl:ml-2 xl:mr-5 xl:h-8 xl:w-auto xl:px-3'/>
 		</div>
-		<button type='button' onclick={toggleSidebar} class='xl:hidden'>
+		<button type='button' onclick={toggleSidebar} class='xl:hidden plus-menu-container'>
 			<img src="/icons/menu-gray.png" alt="Menu Icon" class='w-10 h-auto opacity-70'/>
 		</button>
 	</nav>

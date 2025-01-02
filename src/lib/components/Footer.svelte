@@ -2,7 +2,7 @@
     import Button from '$lib/components/Button.svelte';
 </script>
 
-<footer class='h-auto w-full bg-gray sm:pb-5'>
+<footer class='h-auto w-full bg-gray sm:pb-5 overflow-x-hidden'>
 	<h1 class='text-white font-fontRoboto xl:text-lg sm:text-xl font-bold pl-10 py-5 pt-4 2xl:pl-24'>BOOK YOUR REPAIR NOW</h1>
 	<div class='grid grid-rows-2 grid-cols-2 gap-4'>
 		<div class='col-start-1 row-start-1 col-end-2 row-end-2 w-full h-full flex flex-col'>
@@ -11,11 +11,11 @@
 		</div>
 		<div class='col-start-1 row-start-2 col-end-2 row-end-3 w-full h-full flex flex-col'>
 			<h2 class="font-fontRoboto text-white lg:text-base sm:text-sm ml-10 2xl:ml-24 2xl:text-sm mb-1">BUSINESS HOURS</h2>
-			<div class="flex justify-between w-[60%]">
+			<div class="flex justify-between w-full">
 				<span class="font-fontInter text-yellow sm:text-xs ml-10 2xl:ml-24">Mon - Fri</span>
 				<span class="font-fontInter text-yellow sm:text-xs">8am - 5pm</span>
 			</div>
-			<div class="flex justify-between w-[60%]">
+			<div class="flex justify-between w-full">
 				<span class="font-fontInter text-yellow sm:text-xs ml-10 2xl:ml-24">Sat & Sun</span>
 				<span class="font-fontInter text-yellow sm:text-xs">Closed</span>
 			</div>
