@@ -1,4 +1,6 @@
 <script lang='ts'>
+    import { path } from '../../stores/header.svelte';
+
     let { 
         label = "Book",
         href = "#", 
@@ -7,9 +9,8 @@
         additionalStyling = '',
     } = $props();
     const baseStyling = 'flex justify-center bg-yellow font-fontInter sm:font-bold text-blue items-center xl:text-base sm:text-sm'
-
 </script>
 
-<a href={href} class={width + ' ' + height + ' ' + baseStyling + ' ' + additionalStyling}>
+<a href={href} class={width + ' ' + height + ' ' + baseStyling + ' ' + additionalStyling} onclick={() => path.currentPath = '/'}>
     {label}
 </a>

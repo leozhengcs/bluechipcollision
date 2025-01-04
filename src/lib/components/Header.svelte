@@ -2,6 +2,8 @@
     import Button from '$lib/components/Button.svelte';
 	import { onMount } from 'svelte';
 	import { handleClickOutside } from '$lib/utils/eventHandlers';
+	import { handleNavigation } from '$lib/utils/eventHandlers';
+	import { path } from '../../stores/header.svelte';
 
     let sidebar = $state(false);
 	let currentPath = $state('');
@@ -11,12 +13,8 @@
 		currentPath = window.location.pathname;
 	});
 
-	const isActive = (path: string) => {
-		return currentPath.includes(path);
-	}
-
-	const handleNavigation = (path: string) => {
-		currentPath = path;
+	const isActive = (page: string) => {
+		return page.includes(path.currentPath) && path.currentPath !== '/';
 	}
 
     let toggleSidebar = () => {

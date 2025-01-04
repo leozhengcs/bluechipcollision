@@ -1,3 +1,5 @@
+import { path } from "../../stores/header.svelte";
+
 export function handleClickOutside(
     event: MouseEvent,
     className: string,
@@ -7,4 +9,8 @@ export function handleClickOutside(
     if (!target.closest(className)) {
         clickOutsideAction();
     }
+}
+
+export const handleNavigation = (newPath: string) => {
+    path.currentPath = newPath;
 }

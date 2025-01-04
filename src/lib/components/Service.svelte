@@ -2,8 +2,8 @@
     let {
         src,
         label='',
-        iconStyling='sm:w-[65px] h-auto xl:w-[50px]',
-        textStyling="ml-5 text-gray font-fontInter text-lg xl:text-base",
+        iconStyling='sm:w-[65px] h-auto xl:w-[80px]',
+        textStyling="ml-5 text-gray font-fontInter text-lg xl:text-xl",
         margin='mb-5',
     } = $props();
 </script>

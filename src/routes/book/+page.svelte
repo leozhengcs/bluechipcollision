@@ -2,9 +2,9 @@
     import { getRandomInt } from "$lib/utils/mathUtils";
     import { onMount } from "svelte";
     import { goto } from '$app/navigation';
-    import { showFooter } from '../../stores/footer';
+    import { footerState } from '../../stores/footer.svelte';
     
-    showFooter.set(true);
+    footerState.show = false;
 
     let num1: number;
     let num2: number;
@@ -24,20 +24,20 @@
 
 <main class="bg-blue">
     <section class='py-5'>
-        <h1 class='ml-10 font-bold text-white text-2xl font-fontRoboto'>REQUEST REPAIR ESTIMATE</h1>
-        <hr class='bg-yellow h-[2px] border-0 ml-10'/>
-        <p class="ml-10 mt-2 text-white font-fontInter text-sm w-[85%]">
+        <h1 class='ml-10 font-bold text-white text-2xl font-fontRoboto xl:ml-64 xl:pt-10'>REQUEST REPAIR ESTIMATE</h1>
+        <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
+        <p class="ml-10 mt-2 text-white font-fontInter text-sm w-[85%] xl:mx-64">
             Blue Chip Collision provides complementary estimates for collision repairs. Simply complete the form to get started.
         </p>
-        <p class="ml-10 mt-2 text-white font-fontInter text-sm w-[85%]">
+        <p class="ml-10 mt-2 text-white font-fontInter text-sm w-[85%] xl:mx-64">
             Upon reviewing your online submission, we will contact you to arrange a data and time to assess your vehicle's damage and to provide you with a written repair estimate.
         </p>
     </section>
     <section class="bg-white">
-        <h1 class='ml-10 font-bold text-blue text-2xl font-fontRoboto pt-5'>BOOK APPOINTMENT</h1>
-        <hr class='bg-yellow h-[2px] border-0 ml-10'/>
-        <form action="" class='mx-10 my-5'>
-            <input type="text" class='border-2 mb-5 border-yellow w-full' placeholder="Name*">
+        <h1 class='ml-10 font-bold text-blue text-2xl font-fontRoboto pt-5 xl:ml-64'>BOOK APPOINTMENT</h1>
+        <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
+        <form action="" class='mx-10 my-5 xl:mx-64'>
+        <input type="text" class='border-2 mb-5 border-yellow w-full' placeholder="Name*">
             <input type="email" class='border-2 mb-5 border-yellow w-full' placeholder="Cell Phone #*">
             <input type="email" class='border-2 mb-5 border-yellow w-full' placeholder="Email Address*">
             <input type="email" class='border-2 mb-5 border-yellow w-full' placeholder="Model Year*">

@@ -2,7 +2,7 @@
 	import '../app.css';
 	import Footer from '$lib/components/Footer.svelte';
 	import Header from '$lib/components/Header.svelte';
-	import { showFooter } from '../stores/footer';
+	import { footerState } from '../stores/footer.svelte';
 
 	let { children } = $props();
 
@@ -12,6 +12,6 @@
 
 {@render children()}
 
-{#if $showFooter}
+{#if footerState.show}
 	<Footer />
 {/if}
