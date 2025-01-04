@@ -6,7 +6,7 @@
 
 <main class='bg-blue'>
     <Banner banner='bg-about-banner' title='ABOUT US' styling='bottom-7 text-4xl xl:text-4xl xl:left-64'/>
-    <section class='py-10'>
+    <section class='py-10 min-h-[100vh]'>
         <h1 class='ml-10 xl:ml-64 font-bold text-white text-2xl font-fontRoboto sm:text-xl xl:text-3xl'>OUR MISSION</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
         <p class="font-fontInter text-base text-white sm:px-10 xl:px-64 xl:text-base py-2">
