@@ -4,17 +4,23 @@
     import { onMount } from 'svelte';
     import { getRandomInt } from '$lib/utils/mathUtils';
     import { footerState } from '../../stores/footer.svelte';
+    import Map from '$lib/components/Map.svelte';
     footerState.show = true
 
     let num1: number;
     let num2: number;
     let res: number;
-    onMount(() => {
+
+    export const long = -123.124965;
+    export const lat = 49.205857;
+
+    onMount(async () => {
         num1 = getRandomInt(1, 10);
         num2 = getRandomInt(1, 10);
         res = num1 + num2;
-    })
-    
+
+        
+    });
     
 </script>
 
@@ -55,9 +61,7 @@
             textStyling='text-white font-fontInter text-base ml-2' 
             margin='mt-2'
         />
-        <div class="w-screen h-60 bg-gray my-5 flex items-center justify-center">
-            <span class='text-white'>GOOGLE MAPS API</span>
-        </div>
+        <Map lat=49.205857 lng=-123.124965 zoom = 18/>
     </section>
     <section>
         <h1 class='ml-10 font-bold text-white text-2xl font-fontRoboto xl:ml-64'>LINKS</h1>

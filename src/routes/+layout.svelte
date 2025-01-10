@@ -5,7 +5,6 @@
 	import { footerState } from '../stores/footer.svelte';
 
 	let { children } = $props();
-
 </script>
 
 <Header />
