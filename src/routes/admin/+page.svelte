@@ -1,33 +1,14 @@
-<script>
-    let name = '';
-    let email = '';
-    let message = '';
-    let success = '';
-    let error = '';
-
-    async function submitForm() {
-        const response = await fetch('/api/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, message })
-        });
-
-        if (response.ok) {
-            success = 'Submitted!';
-            error = '';
-        } else {
-            error = 'Error submitting form.';
-            success = '';
-        }
-    }
+<script lang='ts'>
+    let { data } = $props();
 </script>
 
-<form on:submit|preventDefault={submitForm}>
-    <input type="text" placeholder="Name" bind:value={name} required />
-    <input type="email" placeholder="Email" bind:value={email} required />
-    <textarea placeholder="Message" bind:value={message} required></textarea>
-    <button type="submit">Submit</button>
-</form>
+<main class='bg-blue min-h-screen'>
+    <h1 class='ml-10 xl:mx-64 font-bold text-white text-2xl font-fontRoboto sm:text-xl xl:text-3xl pt-20 pb-5'>COMPLETED</h1>
+    <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
 
-{#if success}<p>{success}</p>{/if}
-{#if error}<p>{error}</p>{/if}
+    <h1 class='ml-10 xl:mx-64 font-bold text-white text-2xl font-fontRoboto sm:text-xl xl:text-3xl pt-20 pb-5'>PENDING</h1>
+    <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
+
+    <h1 class='ml-10 xl:mx-64 font-bold text-white text-2xl font-fontRoboto sm:text-xl xl:text-3xl pt-20 pb-5'>CANCELLED</h1>
+    <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
+</main>

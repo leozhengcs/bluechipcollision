@@ -11,15 +11,10 @@
     let num2: number;
     let res: number;
 
-    export const long = -123.124965;
-    export const lat = 49.205857;
-
     onMount(async () => {
         num1 = getRandomInt(1, 10);
         num2 = getRandomInt(1, 10);
         res = num1 + num2;
-
-        
     });
     
 </script>
