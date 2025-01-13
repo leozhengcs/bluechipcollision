@@ -1,7 +1,7 @@
 <script lang='ts'>
     import { getRandomInt } from "$lib/utils/mathUtils";
     import { onMount } from "svelte";
-    import { goto } from '$app/navigation';
+    import { goto } from "$app/navigation";
     import { footerState } from '../../stores/footer.svelte';
     
     footerState.show = false;
