@@ -7,7 +7,7 @@ import type { PageServerLoad } from './$types';
 async function getForms(db: Firestore) {
     const formsCollection = collection(db, 'forms');
     const formsSnapshot = await getDocs(formsCollection);
-    return formsSnapshot.docs.map(doc => doc.data());
+    return formsSnapshot.docs.map(doc => ({id: doc.id, data: doc.data()}));
 }
 
 export const load: PageServerLoad = async ({ cookies }) => {
@@ -18,7 +18,6 @@ export const load: PageServerLoad = async ({ cookies }) => {
     }
 
     const forms = await getForms(db);
-    console.log(forms);
     return {
         forms,
     };

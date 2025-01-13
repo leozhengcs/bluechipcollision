@@ -17,8 +17,7 @@ export const actions = {
             return fail(401, { error: 'Invalid username or password' });
         }
 
-        //TODO: Add cookie logic here!
-        cookies.set('authenticated', '', {
+        cookies.set('authenticated', 'true', {
             path: '/',
             httpOnly: true,
             sameSite: 'strict',
