@@ -1,7 +1,6 @@
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '$lib/firebase';
-import type { PageServerLoad } from './$types';
-import type { Actions } from './$types';
+import type { PageServerLoad, Actions } from './$types';
 
 
 export const load: PageServerLoad = async ({ url }) => {
@@ -38,7 +37,7 @@ export const actions = {
             const phoneNum = data.get('phoneNum');
             const email = data.get('email');
             const vin = data.get('vin');
-            
+
             if (!docId || typeof docId !== 'string') {
                 throw new Error('docId is required and must be a valid string');
             }

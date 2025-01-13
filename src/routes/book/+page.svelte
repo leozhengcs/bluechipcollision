@@ -36,16 +36,15 @@
     <section class="bg-white">
         <h1 class='ml-10 font-bold text-blue text-2xl font-fontRoboto pt-5 xl:ml-64'>BOOK APPOINTMENT</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
-        <form action="" class='mx-10 my-5 xl:mx-64'>
-        <input type="text" class='border-2 mb-5 border-yellow w-full' placeholder="Name*">
-            <input type="email" class='border-2 mb-5 border-yellow w-full' placeholder="Cell Phone #*">
-            <input type="email" class='border-2 mb-5 border-yellow w-full' placeholder="Email Address*">
-            <input type="email" class='border-2 mb-5 border-yellow w-full' placeholder="Model Year*">
-            <input type="email" class='border-2 mb-5 border-yellow w-full' placeholder="VIN*">
-            <input type="text" class='border-2 mb-5 border-yellow w-full' placeholder="{num1} + {num2} = ?*">
+        <form method="POST" class='mx-10 my-5 xl:mx-64'>
+            <input type="text" name='name' class='border-2 mb-5 border-yellow w-full' placeholder="Name*">
+            <input type="text" name='phoneNum' class='border-2 mb-5 border-yellow w-full' placeholder="Cell Phone #*">
+            <input type="email" name='email' class='border-2 mb-5 border-yellow w-full' placeholder="Email Address*">
+            <input type="text" name='modelYear' class='border-2 mb-5 border-yellow w-full' placeholder="Model Year*">
+            <input type="number" name='vin' class='border-2 mb-5 border-yellow w-full' placeholder="VIN*">
+            <input type="number" name='captcha' class='border-2 mb-5 border-yellow w-full' placeholder="{num1} + {num2} = ?*">
             <fieldset class='mb-5'>
                 <legend class='font-bold text-blue border-0'>CHOICE OF REPLY</legend>
-
                 <div class="flex gap-4">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="radio" bind:group={selectedOption} value="text" class='text-yellow focus:ring-yellow checked:bg-yellow checked:ring-2 checked:ring-yellow'/> TEXT
@@ -55,7 +54,7 @@
                     </label>
                 </div>
             </fieldset>
-            <button type='button' class='bg-yellow p-2 px-3 text-blue font-fontInter font-bold text-sm' onclick={navToConfirm}>Book</button>
+            <button type='submit' class='bg-yellow p-2 px-3 text-blue font-fontInter font-bold text-sm' onclick={navToConfirm}>Book</button>
         </form>
     </section>
 </main>
