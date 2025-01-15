@@ -1,3 +1,4 @@
-export const path = $state({
+export const headerState = $state({
     currentPath: '/',
+    sidebar: false,
 })

@@ -1,4 +1,4 @@
-import { path } from "../../stores/header.svelte";
+import { headerState } from "../../stores/header.svelte";
 
 export function handleClickOutside(
     event: MouseEvent,
@@ -12,5 +12,5 @@ export function handleClickOutside(
 }
 
 export const handleNavigation = (newPath: string) => {
-    path.currentPath = newPath;
+    headerState.currentPath = newPath;
 }
