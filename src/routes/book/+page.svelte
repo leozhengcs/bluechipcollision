@@ -34,7 +34,9 @@
             Upon reviewing your online submission, we will contact you to arrange a data and time to assess your vehicle's damage and to provide you with a written repair estimate.
         </p>
     </section>
-    <Calendar />
+    <section class="py-5 xl:mx-64">
+        <Calendar />
+    </section>
     <section class="bg-white">
         <h1 class='ml-10 font-bold text-blue text-2xl font-fontRoboto pt-5 xl:ml-64'>BOOK APPOINTMENT</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>

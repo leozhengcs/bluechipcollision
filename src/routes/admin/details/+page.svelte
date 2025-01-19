@@ -3,6 +3,7 @@
     footerState.show = false;
 
     const { data } = $props();
+    console.log(data);
     const docId = $state(data.id);
     let phoneNum = $state(data.phoneNum);
     let email = $state(data.email);

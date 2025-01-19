@@ -14,7 +14,6 @@ export const actions = {
             const vin = data.get('vin');
             const responsePref = data.get('respondPref');
             const status = 'pending';
-            console.log(vin);
 
             console.log("trying to add doc")
             const docRef = await addDoc(collection(db, 'forms'), {

@@ -17,9 +17,11 @@ export const actions = {
             return fail(401, { error: 'Invalid username or password' });
         }
 
+        // TODO: Utilize Crpyto to generate a secure token instead of using 'true'.
         cookies.set('authenticated', 'true', {
             path: '/',
             httpOnly: true,
+            secure: true,
             sameSite: 'strict',
             maxAge: 60 * 60 * 3,
         })

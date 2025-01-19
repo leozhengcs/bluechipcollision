@@ -5,6 +5,7 @@ dotenv.config();
 
 const SERVICE_ACCOUNT_KEY = process.env.SERVICE_ACCOUNT_KEY as string;
 const GOOGLE_CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID as string;
+const BOOKING_DAYS = 2;
 
 if (!SERVICE_ACCOUNT_KEY || !GOOGLE_CALENDAR_ID) {
   throw new Error('Environment variables SERVICE_ACCOUNT_KEY and GOOGLE_CALENDAR_ID must be set.');
@@ -17,52 +18,66 @@ function getAvailableSlots(
   events: { start: string; end: string }[],
 ): { start: string; end: string }[] {
   const slots: { start: string; end: string }[] = [];
-  const dayStart = new Date();
-  dayStart.setHours(parseInt(workingHours.start.split(':')[0]));
-  dayStart.setMinutes(parseInt(workingHours.start.split(':')[1]));
 
-  const dayEnd = new Date();
-  dayEnd.setHours(parseInt(workingHours.end.split(':')[0]));
-  dayEnd.setMinutes(parseInt(workingHours.end.split(':')[1]));
+  const rangeStart = new Date();
+  const rangeEnd = new Date();
+  rangeEnd.setDate(rangeStart.getDate() + BOOKING_DAYS);
 
-  // Convert events to Date objects and sort by start time
-  const sortedEvents = events
-    .map((event) => ({
-      start: new Date(event.start),
-      end: new Date(event.end),
-    }))
-    .sort((a, b) => a.start.getTime() - b.start.getTime());
+  for (
+    let currentDate = new Date(rangeStart);
+    currentDate <= rangeEnd;
+    currentDate.setDate(currentDate.getDate() + 1)
+  ) {
+    const dayStart = new Date(currentDate);
+    dayStart.setHours(parseInt(workingHours.start.split(':')[0]), parseInt(workingHours.start.split(':')[1]), 0, 0);
 
-  let currentTime = dayStart;
+    const dayEnd = new Date(currentDate);
+    dayEnd.setHours(parseInt(workingHours.end.split(':')[0]), parseInt(workingHours.end.split(':')[1]), 0, 0);
 
-  for (const event of sortedEvents) {
-    // Check for gaps before the current event
-    if (currentTime < event.start) {
-      let gapStart = currentTime;
-      while (gapStart < event.start && gapStart < dayEnd) {
-        const gapEnd = new Date(gapStart.getTime() + slotDuration * 60000);
-        if (gapEnd <= event.start && gapEnd <= dayEnd) {
-          slots.push({
-            start: gapStart.toISOString(),
-            end: gapEnd.toISOString(),
-          });
+    // Convert events to Date objects and sort by start time
+    const sortedEvents = events
+      .filter(
+        (event) =>
+          new Date(event.start).toDateString() === currentDate.toDateString()
+      )
+      .map((event) => ({
+        start: new Date(event.start),
+        end: new Date(event.end),
+      }))
+      .sort((a, b) => a.start.getTime() - b.start.getTime());
+
+    let currentTime = dayStart;
+
+    for (const event of sortedEvents) {
+      // Check for gaps before the current event
+      if (currentTime < event.start) {
+        let gapStart = currentTime;
+        while (gapStart < event.start && gapStart < dayEnd) {
+          const gapEnd = new Date(gapStart.getTime() + slotDuration * 60000);
+          if (gapEnd <= event.start && gapEnd <= dayEnd) {
+            slots.push({
+              start: gapStart.toISOString(),
+              end: gapEnd.toISOString(),
+            });
+            console.log("Event Exists");
+          }
+          gapStart = gapEnd;
         }
-        gapStart = gapEnd;
       }
+      currentTime = event.end > currentTime ? event.end : currentTime;
     }
-    currentTime = event.end > currentTime ? event.end : currentTime;
-  }
 
-  // Check for slots after the last event
-  while (currentTime < dayEnd) {
-    const slotEnd = new Date(currentTime.getTime() + slotDuration * 60000);
-    if (slotEnd <= dayEnd) {
-      slots.push({
-        start: currentTime.toISOString(),
-        end: slotEnd.toISOString(),
-      });
+    // Check for slots after the last event
+    while (currentTime < dayEnd) {
+      const slotEnd = new Date(currentTime.getTime() + (slotDuration * 60000));
+      if (slotEnd <= dayEnd) {
+        slots.push({
+          start: currentTime.toISOString(),
+          end: slotEnd.toISOString(),
+        });
+      }
+      currentTime = slotEnd;
     }
-    currentTime = slotEnd;
   }
 
   return slots;
@@ -79,7 +94,7 @@ export async function GET(): Promise<Response> {
 
   const now = new Date();
   const endOfWeek = new Date();
-  endOfWeek.setDate(now.getDate() + 7); // Fetch slots for the next 7 days
+  endOfWeek.setDate(now.getDate() + BOOKING_DAYS);
 
   // Fetch existing events from Google Calendar
   const res = await calendar.events.list({
@@ -96,8 +111,8 @@ export async function GET(): Promise<Response> {
   }));
 
   // Define working hours and slot duration
-  const workingHours = { start: '08:00', end: '17:00' }; // Example: 9 AM to 5 PM
-  const slotDuration = 60; // 30 minutes
+  const workingHours = { start: '8:00', end: '17:00' }; // 8 AM to 5 PM
+  const slotDuration = 60;
 
   // Calculate available slots
   const availableSlots = getAvailableSlots(workingHours, slotDuration, events);
