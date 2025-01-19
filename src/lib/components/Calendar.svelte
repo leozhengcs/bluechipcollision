@@ -1,14 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  // Define the Slot interface
-  interface Slot {
-    start: string;
-    end: string;
-    summary: string;
-  }
-
-  type SlotsByDate = Record<string, Slot[]>;
+  import type { Slot, SlotsByDate } from '$lib/types/calendar';
 
   let slots: Slot[] = $state([]);
   let slotsByDate: SlotsByDate = $state({});
@@ -16,9 +9,8 @@
   const today = new Date();
   let currentYear = $state(today.getFullYear());
   let currentMonth = $state(today.getMonth());
-  let selectedDate:null|string = $state(null);
-  let selectedTime:null|string = $state(null);
-  $inspect(selectedDate);
+
+  let { selectedDate = $bindable(), startTime = $bindable(), endTime = $bindable() } = $props();
 
   const daysOfWeek: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   let daysInMonth:(number | null)[] = $state([]);
@@ -57,21 +49,6 @@
     }, {});
   });
 
-  const bookSlot = async (slot: Slot) => {
-    const res = await fetch('/book', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        start: slot.start,
-        end: slot.end,
-        summary: 'User Booking',
-      }),
-    });
-
-    const data = await res.json();
-    alert(`Booked: ${data.summary}`);
-  };
-
   function getTimes(date: string): void {
     availableTimes = [];
     if (!slotsByDate[date]) {
@@ -95,15 +72,13 @@
     }));
 
     // Sort times based on local `startDate` by hours.
-     const sortedTimes = unsortedTimes.sort((a, b) => a.startDate.getHours() - b.startDate.getHours());
+    const sortedTimes = unsortedTimes.sort((a, b) => a.startDate.getHours() - b.startDate.getHours());
 
-
-     sortedTimes.forEach(({ startDate, endDate }) => {
-      console.log(startDate);
-      availableTimes.push({
-        start: formatTime(startDate), // Format start time in local time
-        end: formatTime(endDate),     // Format end time in local time
-      } as Slot);
+    sortedTimes.forEach(({ startDate, endDate }) => {
+    availableTimes.push({
+      start: formatTime(startDate), // Format start time in local time
+      end: formatTime(endDate),     // Format end time in local time
+    } as Slot);
     });
   }
 
@@ -113,12 +88,14 @@
       const selectedDay = new Date(currentYear, currentMonth, day);
       selectedDate = selectedDay.toISOString().slice(0, 10);
       getTimes(selectedDate);
+      startTime = null;
     }
   }
 
-  function selectTime(time: string | null): void {
+  function selectTime(time: Slot | null): void {
     if (time) {
-      selectedTime = time;
+      startTime = time.start;
+      endTime = time.end;
     }
   }
 
@@ -145,10 +122,6 @@
   }
 </script>
 
-
-<!-- {#each slots as slot, index}
-{slot.start} - {slot.end}
-<button onclick={() => bookSlot(slot)}>Book</button> -->
 <div class="grid grid-rows-1 grid-cols-2">
   <div class='flex flex-col items-center space-y-4 col-start-1 col-end-2'>
     <div class="flex items-center justify-between w-full max-w-xs">
@@ -202,9 +175,9 @@
         {#each availableTimes as time}
           <button 
             class="flex justify-center items-center rounded-md text-center p-1 2xl:p-2 border-yellow border-2
-              {selectedTime && selectedTime === time.start ? "bg-yellow text-white" : ""}"
+              {startTime && startTime === time.start ? "bg-yellow text-white" : ""}"
             onclick={() => {
-              selectTime(time.start);
+              selectTime(time);
             }}
           >{time.start} - {time.end}</button>
         {/each}
@@ -214,4 +187,3 @@
     </div>
   </div>
 </div>
-<!-- {/each} -->

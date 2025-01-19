@@ -1,4 +1,5 @@
 import { headerState } from "../../stores/header.svelte";
+import type { Slot } from '$lib/types/calendar';
 
 export function handleClickOutside(
     event: MouseEvent,
@@ -12,5 +13,24 @@ export function handleClickOutside(
 }
 
 export const handleNavigation = (newPath: string) => {
-    headerState.currentPath = newPath;
+  headerState.currentPath = newPath;
 }
+
+export const bookSlot = async (slot: Slot, fetchFn: typeof fetch) => {
+  const res = await fetchFn('/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+          start: slot.start,
+          end: slot.end,
+          summary: 'User Booking',
+      }),
+  });
+
+  if (!res.ok) {
+      throw new Error(`Failed to book slot: ${res.statusText}`);
+  }
+
+  const data = await res.json();
+  return data;
+};

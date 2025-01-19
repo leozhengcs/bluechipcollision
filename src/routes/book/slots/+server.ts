@@ -50,20 +50,18 @@ function getAvailableSlots(
 
     for (const event of sortedEvents) {
       // Check for gaps before the current event
-      if (currentTime < event.start) {
-        let gapStart = currentTime;
-        while (gapStart < event.start && gapStart < dayEnd) {
-          const gapEnd = new Date(gapStart.getTime() + slotDuration * 60000);
-          if (gapEnd <= event.start && gapEnd <= dayEnd) {
-            slots.push({
-              start: gapStart.toISOString(),
-              end: gapEnd.toISOString(),
-            });
-            console.log("Event Exists");
-          }
-          gapStart = gapEnd;
+      while (currentTime < event.start) {
+        const gapEnd = new Date(currentTime.getTime() + slotDuration * 60000);
+        if (gapEnd <= event.start && gapEnd <= dayEnd) {
+          slots.push({
+            start: currentTime.toISOString(),
+            end: gapEnd.toISOString(),
+          });
         }
+        currentTime = gapEnd;
       }
+
+      // Move currentTime past the current event
       currentTime = event.end > currentTime ? event.end : currentTime;
     }
 
