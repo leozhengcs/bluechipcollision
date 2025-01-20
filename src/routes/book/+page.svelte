@@ -4,6 +4,7 @@
     import { goto } from "$app/navigation";
     import { footerState } from '../../stores/footer.svelte';
     import Calendar from "$lib/components/Calendar.svelte";
+    import emailjs from 'emailjs-com';
     
     footerState.show = false;
 
@@ -16,7 +17,10 @@
         res = num1 + num2;
     })
 
-    function navToConfirm() {
+    async function navToConfirm(event: MouseEvent) {
+        event.preventDefault();
+        await sendEmail();
+        await sendConfirm();
         goto('/confirm'); // Navigates to the booking confirmation page.
     }
 
@@ -24,6 +28,59 @@
     let selectedDate:null|string = $state(null);
     let startTime:null|string = $state(null);
     let endTime:null|string = $state(null);
+    let name = $state('');
+    let email = $state('');
+    let phoneNum = $state('');
+    let modelYear = $state('');
+    let vin = $state('');
+
+    const sendEmail = async () => {
+        try {
+            const templateID = 'template_ms7apnd'; // Service ID from EmailJS
+            const publicKey = 'dLmCzZJKlKbV1UctL'; // Template ID from EmailJS
+            const serviceID = 'service_3br9lld'; // Public Key from EmailJS
+
+            const templateParams = {
+                name: name,
+                to_email: email,
+                startTime: startTime,
+                endTime: endTime,
+            };
+
+            // Send email using EmailJS
+            const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
+
+            if (response.status !== 200) {
+                console.error("Error sending email. Check console for details.")
+            }
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
+    };
+
+    const sendConfirm = async () => {
+    try {
+        const templateID = 'template_ms7apnd'; // Template ID from EmailJS
+        const publicKey = 'dLmCzZJKlKbV1UctL'; // Public Key from EmailJS
+        const serviceID = 'service_3br9lld'; // Service ID from EmailJS
+
+        const templateParams = {
+            name: name,
+            user_email: email,
+            to_email: 'bluechipcollision@gmail.com',
+            startTime: startTime,
+            endTime: endTime,
+        };
+
+        // Send email using EmailJS
+        const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
+        if (response.status !== 200) {
+            console.error("Error sending email. Check console for details.")
+        }
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+};
 </script>
 
 <main class="bg-blue">
@@ -44,11 +101,11 @@
         <h1 class='ml-10 font-bold text-blue text-2xl font-fontRoboto pt-5 xl:mx-64'>BOOK APPOINTMENT</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
         <form method="POST" class='mx-10 my-5 xl:mx-64'>
-            <input type="text" name='name' class='border-2 mb-5 border-yellow w-full' placeholder="Name*">
-            <input type="text" name='phoneNum' class='border-2 mb-5 border-yellow w-full' placeholder="Cell Phone #*">
-            <input type="email" name='email' class='border-2 mb-5 border-yellow w-full' placeholder="Email Address*">
-            <input type="text" name='modelYear' class='border-2 mb-5 border-yellow w-full' placeholder="Model Year*">
-            <input type="text" name='vin' class='border-2 mb-5 border-yellow w-full' placeholder="VIN*">
+            <input type="text" name='name' class='border-2 mb-5 border-yellow w-full' placeholder="Name*" bind:value={name}>
+            <input type="text" name='phoneNum' class='border-2 mb-5 border-yellow w-full' placeholder="Cell Phone #*" bind:value={phoneNum}>
+            <input type="email" name='email' class='border-2 mb-5 border-yellow w-full' placeholder="Email Address*" bind:value={email}>
+            <input type="text" name='modelYear' class='border-2 mb-5 border-yellow w-full' placeholder="Model Year*" bind:value={modelYear}>
+            <input type="text" name='vin' class='border-2 mb-5 border-yellow w-full' placeholder="VIN*" bind:value={vin}>
             <input type="number" name='captcha' class='border-2 mb-5 border-yellow w-full' placeholder="Captcha: {num1} + {num2} = ?*">
             <fieldset class='mb-5'>
                 <legend class='font-bold text-blue border-0'>CHOICE OF REPLY</legend>

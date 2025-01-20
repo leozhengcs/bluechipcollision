@@ -5,7 +5,8 @@ dotenv.config();
 
 const SERVICE_ACCOUNT_KEY = process.env.SERVICE_ACCOUNT_KEY as string;
 const GOOGLE_CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID as string;
-const BOOKING_DAYS = 2;
+const BOOKING_DAYS = 7; // Days you can book ahead
+const NOTICE = 2; // 2 Day notice
 
 if (!SERVICE_ACCOUNT_KEY || !GOOGLE_CALENDAR_ID) {
   throw new Error('Environment variables SERVICE_ACCOUNT_KEY and GOOGLE_CALENDAR_ID must be set.');
@@ -20,6 +21,7 @@ function getAvailableSlots(
   const slots: { start: string; end: string }[] = [];
 
   const rangeStart = new Date();
+  rangeStart.setDate(rangeStart.getDate() + NOTICE);
   const rangeEnd = new Date();
   rangeEnd.setDate(rangeStart.getDate() + BOOKING_DAYS);
 
