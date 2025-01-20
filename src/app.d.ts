@@ -5,9 +5,7 @@ import type { Slot } from "$lib/types/calendar";
 declare global {
 	namespace App {
 		// interface Error {}
-		interface Locals {
-			slotData?: Slot;
-		}
+		// interface Locals {}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}

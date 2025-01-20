@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const SERVICE_ACCOUNT_KEY = process.env.SERVICE_ACCOUNT_KEY as string;
+const SERVICE_ACCOUNT_KEY = process.env.GOOGLE_CLOUD_CREDENTIALS as string;
 const GOOGLE_CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID as string;
 const BOOKING_DAYS = 7; // Days you can book ahead
 const NOTICE = 2; // 2 Day notice
