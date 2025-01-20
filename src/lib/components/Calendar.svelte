@@ -41,7 +41,7 @@
     slots = await res.json() as Slot[];
 
     // Split the slots into date and times with each date holding an array of available time
-    slotsByDate = slots.reduce((acc: SlotsByDate, slot) => {
+    slotsByDate = (Array.isArray(slots) ? slots : []).reduce((acc: SlotsByDate, slot) => {
       const date = new Date(slot.start).toISOString().split('T')[0]; // YYYY-MM-DD
       if (!acc[date]) acc[date] = [];
       acc[date].push(slot);
