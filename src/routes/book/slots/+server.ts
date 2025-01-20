@@ -116,6 +116,7 @@ export async function GET(): Promise<Response> {
     timeMax: endOfWeek.toISOString(),
     singleEvents: true,
     orderBy: 'startTime',
+    timeZone: 'America/Los_Angeles', // Specify PST timezone
   });
 
   const events = (res.data.items || []).map((event) => ({

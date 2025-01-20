@@ -26,6 +26,7 @@ export async function POST({ request }) {
       summary,
       start: { dateTime: start },
       end: { dateTime: end },
+      timeZone: 'America/Los_Angeles',
     };
 
     const res = await calendar.events.insert({
