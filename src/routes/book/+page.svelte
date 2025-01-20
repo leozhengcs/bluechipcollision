@@ -18,7 +18,6 @@
     })
 
     async function navToConfirm(event: MouseEvent) {
-        event.preventDefault();
         await sendEmail();
         await sendConfirm();
         goto('/confirm'); // Navigates to the booking confirmation page.

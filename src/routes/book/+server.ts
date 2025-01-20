@@ -50,14 +50,14 @@ export async function POST({ request }) {
       summary,
       start: { dateTime: formattedStart, timeZone },
       end: { dateTime: formattedEnd, timeZone },
-      timeZone: timeZone,
     };
 
+    console.log("booking")
     const res = await calendar.events.insert({
       calendarId: process.env.GOOGLE_CALENDAR_ID,
       requestBody: event,
     });
-
+    
     console.log('Event created successfully:', res.data);
     // Respond with event details
     return new Response(JSON.stringify(res.data), {

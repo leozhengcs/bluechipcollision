@@ -33,6 +33,8 @@ function formatTime(time: string): string {
 
 export const actions = {
   default: async ({ request, fetch }) => {
+    if (request.method !== 'POST') return;
+
     try {
       const data = await request.formData();
       const carMake = data.get('carMake');
@@ -54,7 +56,9 @@ export const actions = {
       });
 
       let startTime = data.get('startTime');
+      console.log(startTime);
       let endTime = data.get('endTime');
+      console.log(endTime);
       if (!startTime || !endTime) {
         return;
       }
@@ -84,10 +88,10 @@ export const actions = {
         throw new Error('Failed to process booking');
       }
 
-      throw redirect(303, '/confirm');
     } catch (error) {
-      console.error('Error updating document:', error);
-      throw redirect(303, '/book');
+        console.error('Error updating document:', error);
+        throw redirect(303, '/book');
     }
+    return redirect(303, '/confirm');
   },
 } satisfies Actions;
