@@ -43,6 +43,7 @@ export async function POST({ request }) {
       requestBody: event,
     });
 
+    console.log('Event created successfully:', res.data);
     // Respond with event details
     return new Response(JSON.stringify(res.data), {
       status: 200,
