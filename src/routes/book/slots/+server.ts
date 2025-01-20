@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const GOOGLE_CLOUD_CREDENTIALS = `${{
+const GOOGLE_CLOUD_CREDENTIALS = {
   "type": process.env.GOOGLE_CLOUD_TYPE,
   "project_id": process.env.GOOGLE_CLOUD_PROJECT_ID,
   "private_key_id": process.env.GOOGLE_CLOUD_PRIVATE_KEY_ID,
@@ -15,8 +15,8 @@ const GOOGLE_CLOUD_CREDENTIALS = `${{
   "auth_provider_x509_cert_url": process.env.GOOGLE_CLOUD_AUTH_PROVIDER,
   "client_x509_cert_url": process.env.GOOGLE_CLOUD_CLIENT,
   "universe_domain": process.env.GOOGLE_CLOUD_UNIVERSE_DOMAIN
-}}`
-const SERVICE_ACCOUNT_KEY = GOOGLE_CLOUD_CREDENTIALS as string;
+}
+const SERVICE_ACCOUNT_KEY = GOOGLE_CLOUD_CREDENTIALS;
 const GOOGLE_CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID as string;
 const BOOKING_DAYS = 7; // Days you can book ahead
 const NOTICE = 2; // 2 Day notice
@@ -99,7 +99,7 @@ function getAvailableSlots(
 export async function GET(): Promise<Response> {
   // Initialize Google Auth
   const auth = new google.auth.GoogleAuth({
-    keyFile: SERVICE_ACCOUNT_KEY,
+    credentials: GOOGLE_CLOUD_CREDENTIALS,
     scopes: ['https://www.googleapis.com/auth/calendar'],
   });
 
