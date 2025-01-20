@@ -50,6 +50,7 @@ export async function POST({ request }) {
       summary,
       start: { dateTime: formattedStart, timeZone },
       end: { dateTime: formattedEnd, timeZone },
+      timeZone: timeZone,
     };
 
     const res = await calendar.events.insert({
