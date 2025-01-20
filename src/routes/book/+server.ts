@@ -1,8 +1,9 @@
 import { google } from "googleapis";
+import { toZonedTime, format } from "date-fns-tz";
 
 export async function POST({ request }) {
   try {
-    // Use already-parsed data passed via locals (or context)
+    // Parse the request body
     const { start, end, summary } = await request.json();
 
     // Validate data
@@ -12,6 +13,15 @@ export async function POST({ request }) {
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
+
+    // Convert start and end times to PST
+    const timeZone = "America/Los_Angeles";
+    const startPST = toZonedTime(new Date(start), timeZone);
+    const endPST = toZonedTime(new Date(end), timeZone);
+
+    // Format the dates back to ISO strings with the timezone
+    const formattedStart = format(startPST, "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone });
+    const formattedEnd = format(endPST, "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone });
 
     // Authenticate with Google API
     const auth = new google.auth.GoogleAuth({
@@ -24,9 +34,8 @@ export async function POST({ request }) {
     // Create a calendar event
     const event = {
       summary,
-      start: { dateTime: start },
-      end: { dateTime: end },
-      timeZone: 'America/Los_Angeles',
+      start: { dateTime: formattedStart, timeZone },
+      end: { dateTime: formattedEnd, timeZone },
     };
 
     const res = await calendar.events.insert({

@@ -101,7 +101,6 @@ function getAvailableSlots(
     }
   }
 
-  console.log(slots);
   return slots;
 }
 
