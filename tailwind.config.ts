@@ -10,9 +10,9 @@ export default {
       'sm': '320px',   // Small
       'md': '375px',   // Medium
       'lg': '425px',  // Large
-      'xl': '768px',  // Extra Large
-      '2xl': '1024px', // Extra Extra Large
-      '3xl': '1440px', // Largest screen
+      'xl': '1024px',  // Extra Large
+      '2xl': '1440px', // Extra Extra Large
+      // '3xl': '1440px', // Largest screen
     },
     extend: {
       backgroundImage: {
