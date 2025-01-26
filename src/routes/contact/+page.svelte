@@ -4,7 +4,6 @@
     import { onMount } from 'svelte';
     import { getRandomInt } from '$lib/utils/mathUtils';
     import { footerState } from '../../stores/footer.svelte';
-    import Map from '$lib/components/Map.svelte';
     footerState.show = true
 
     let num1: number;
