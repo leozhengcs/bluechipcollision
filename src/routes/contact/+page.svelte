@@ -33,15 +33,15 @@
         <section class="row-start-2 row-end-3 col-start-1 col-end-2 w-full">
             <h1 class='mx-10 font-bold text-white text-2xl xl:text-3xl font-fontRoboto xl:pt-10 xl:ml-32 2xl:ml-64'>BUSINESS HOURS</h1>
             <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-32 2xl:ml-64'/>
-            <div class="flex justify-between w-full mt-2 xl:pl-32 2xl:pl-64">
+            <div class="flex justify-between w-full mt-2 px-10 xl:pl-32 2xl:pl-64">
                 <span class="font-fontInter text-white text-sm xl:text-base">Mon - Fri</span>
                 <span class="font-fontInter text-white text-sm xl:text-base">8am - 5pm</span>
             </div>
-            <div class="flex justify-between w-full xl:pl-32 2xl:pl-64">
+            <div class="flex justify-between w-full px-10 xl:pl-32 2xl:pl-64">
                 <span class="font-fontInter text-white text-sm xl:text-base">Saturday</span>
                 <span class="font-fontInter text-white text-sm xl:text-base">By appointment</span>
             </div>
-            <div class="flex justify-between w-full xl:pl-32 2xl:pl-64">
+            <div class="flex justify-between w-full px-10 xl:pl-32 2xl:pl-64">
                 <span class="font-fontInter text-white text-sm xl:text-base">Sunday</span>
                 <span class="font-fontInter text-white text-sm xl:text-base">Closed</span>
             </div>  
@@ -55,6 +55,7 @@
                 iconStyling='w-[30px] ml-10' 
                 textStyling='text-white font-fontInter text-sm px-2' 
                 margin='mt-2'
+                href='https://g.co/kgs/MfwmnVF'
             />
             <div class="w-full p-10"><iframe title='' width="100%" height="600" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=BlueChipCollision-8808%20Laurel%20Street,%20Vancouver,%20British%20Columbia,%20Canada+(Blue%20Chip%20Collision)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"><a href="https://www.gps.ie/">gps vehicle tracker</a></iframe></div>
         </section>
