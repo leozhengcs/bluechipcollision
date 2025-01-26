@@ -37,12 +37,14 @@
 			label = window.innerWidth >= 1024 ? 'Book Appointment' : 'Book Now';
 		});
 	});
-
 </script>
 
 <svelte:window
 	onclick={(e) => {
-		handleClickOutside(e, '.plus-menu-container', () => (headerState.sidebar ? (headerState.sidebar = false) : headerState.sidebar))
+		handleClickOutside(e, '.plus-menu-container', () => {
+			document.body.classList.remove('overflow-hidden');
+			return (headerState.sidebar ? (headerState.sidebar = false) : headerState.sidebar)
+		})
 	}}
 />
 	
