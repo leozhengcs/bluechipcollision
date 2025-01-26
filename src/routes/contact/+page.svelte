@@ -25,9 +25,9 @@
         <h1 class='ml-10 xl:ml-64 font-bold text-white text-2xl font-fontRoboto sm:text-xl xl:text-3xl xl:pt-10'>CONTACT US</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
         <div class="my-4 flex flex-col">
-            <Service src='/icons/telephone.png' label='(604) 327 6587' iconStyling="w-[30px] ml-10 xl:ml-64" textStyling='text-white font-fontInter text-base ml-5' margin='mb-2'/>
-            <Service src='/icons/printer.png' label='(604) 327 5255' iconStyling="w-[30px] ml-10 xl:ml-64" textStyling='text-white font-fontInter text-base ml-5' margin='mb-2'/>
-            <Service src='/icons/email.png' label='info@bluechipcollision.com' iconStyling="w-[30px] ml-10 xl:ml-64" textStyling='text-white font-fontInter text-base ml-5' margin='mb-2'/>
+            <Service href='tel:+16043276587' src='/icons/telephone.png' label='(604) 327 6587' iconStyling="w-[30px] ml-10 xl:ml-64" textStyling='text-white font-fontInter text-base ml-5 hover:underline' margin='mb-2'/>
+            <Service href='tel:+16043275255' src='/icons/printer.png' label='(604) 327 5255' iconStyling="w-[30px] ml-10 xl:ml-64" textStyling='text-white font-fontInter text-base ml-5 hover:underline' margin='mb-2'/>
+            <Service href='mailto:info@bluechipcollision.com' src='/icons/email.png' label='info@bluechipcollision.com' iconStyling="w-[30px] ml-10 xl:ml-64" textStyling='text-white font-fontInter text-base ml-5 hover:underline' margin='mb-2'/>
         </div>
     </section>
     <section class="pb-5">
@@ -39,7 +39,7 @@
         </div>
         <div class="flex justify-between w-[60%] xl:w-[15%] ml-10 xl:ml-64">
             <span class="font-fontInter text-white text-base">Saturday</span>
-            <span class="font-fontInter text-white text-base ">Closed</span>
+            <span class="font-fontInter text-white text-base ">By appointment</span>
         </div>
         <div class="flex justify-between w-[60%] xl:w-[15%] ml-10 xl:ml-64">
             <span class="font-fontInter text-white text-base">Sunday</span>

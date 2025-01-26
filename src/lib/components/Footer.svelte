@@ -18,10 +18,12 @@
 			<div class="grid grid-cols-2 grid-rows-1">
 				<div class="flex flex-col sm:justify-between xl:justify-normal sm:w-full sm:row-start-1 sm:col-start-1">
 					<span class="font-fontInter text-yellow sm:text-xs ">Mon - Fri</span>
-					<span class="font-fontInter text-yellow sm:text-xs">Sat & Sun</span>
+					<span class="font-fontInter text-yellow sm:text-xs">Sat</span>
+					<span class="font-fontInter text-yellow sm:text-xs">Sun</span>
 				</div>
 				<div class="flex flex-col sm:justify-between xl:justify-normal sm:w-full sm:row-start-1 sm:col-start-2">
 					<p class="font-fontInter text-yellow sm:text-xs  text-right">8am - 5pm</p>
+					<p class="font-fontInter text-yellow sm:text-xs text-right">By appointment</p>
 					<p class="font-fontInter text-yellow sm:text-xs text-right">Closed</p>
 				</div>
 			</div>

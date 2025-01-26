@@ -21,7 +21,6 @@
         <Service src='/icons/technician.png' label='Certified Collision Repair'/>
         <Service src='/icons/car-door.png' label='Door & Panel Replacement'/>
         <Service src='/icons/spray.png' label='Painting Services'/>
-        <Service src='/icons/damper.png' label='Suspension and Alignment Repair'/>
     </section>
     
     <div class='bg-blue w-full py-12'>

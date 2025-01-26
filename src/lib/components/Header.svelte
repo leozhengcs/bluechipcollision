@@ -12,7 +12,7 @@
 	});
 
 	const isActive = (page: string) => {
-		return page.includes(headerState.currentPath) && headerState.currentPath !== '/';
+		return page === headerState.currentPath
 	}
 
     let toggleSidebar = () => {
@@ -23,6 +23,8 @@
 			document.body.classList.remove('overflow-hidden');
 		}
 	}
+
+	let points = "50,15 100,100 0,100";
 </script>
 
 <svelte:window
@@ -32,12 +34,46 @@
 />
 	
 
-<header class='sticky top-0 left-0 bg-blue sm:pt-6 xl:pt-0 w-full shadow-xl z-50 overflow-x-hidden'>
+<header class='sticky top-0 left-0 bg-blue sm:pt-6 xl:pt-0 w-full shadow-sm shadow-black z-50 overflow-x-hidden h-20 flex justify-center'>
 	<nav class='flex justify-between items-center p-2 z-50'>
 		<a href="/" class='sm:w-1/3 h-auto mr-5 xl:w-[10%] 2xl:mx-5' onclick={() => handleNavigation('/')}>
 			<img src='/icons/logo.png' alt="Company Logo">
 		</a>
+		<div class='xl:flex items-center h-full sm:hidden gap-5'>
+			<div class='h-full flex justify-row items-center'>
+				<img src="/icons/telephone.png" alt="Phone" class='w-auto h-[35%] px-2'>
+				<a href='tel:+16043276587' class='text-white text-sm hover:underline'>(604) 327 6587</a>
+			</div>
+			<div class='h-full flex justify-row items-center'>
+				<img src="/icons/location.png" alt="" class='w-auto h-[35%] px-2'>
+				<a href='https://g.co/kgs/MfwmnVF' class="text-white text-sm hover:underline">8808 Laurel St #1, Vancouver</a>
+			</div>
+		</div>
 		<div class='flex flex-row items-center sm:gap-2 2xl:gap-5'>
+			<a href='/' 
+				class={`
+				    sm:hidden 
+					xl:block 
+					text-white 
+					font-fontRoboto 
+					relative 
+					inline-block 
+					before:content-[''] 
+					before:absolute 
+					before:bottom-0 
+					before:left-0 
+					before:w-full
+					before:h-[2px] 
+					before:bg-current 
+					before:origin-left 
+					before:transition 
+					before:duration-300 
+					hover:before:scale-x-100 
+					${isActive('/') ? 'before:scale-x-100' : 'before:scale-x-0'}
+				`}
+				onclick={() => handleNavigation('/')}>
+				Home
+			</a>
 			<a href='/about' 
 				class={`
 				    sm:hidden 
