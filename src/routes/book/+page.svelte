@@ -5,33 +5,37 @@
     import { footerState } from '../../stores/footer.svelte';
     import Calendar from "$lib/components/Calendar.svelte";
     import emailjs from 'emailjs-com';
+    import SimpleInput from '$lib/components/SimpleInput.svelte';
+    import Dropdown from '$lib/components/Dropdown.svelte';
+    import Radio from '$lib/components/Radio.svelte';
     
     footerState.show = false;
 
-    let num1: number = $state(0);
-    let num2: number = $state(0);
-    let res: number;
-    onMount(() => {
-        num1 = getRandomInt(1, 10);
-        num2 = getRandomInt(1, 10);
-        res = num1 + num2;
-    })
-
     async function navToConfirm(event: MouseEvent) {
-        await sendEmail();
-        await sendConfirm();
-        goto('/confirm'); // Navigates to the booking confirmation page.
+        // await sendEmail();
+        // await sendConfirm();
+        // goto('/confirm'); // Navigates to the booking confirmation page.
     }
 
-    let selectedOption = $state('text');
+    let file;
+    let choiceResponse = $state('TEXT');
+    let choiceOperational = $state('NO');
+    let choiceCourtesyCar = $state('NO');
+    let privateRepair = $state(false);
     let selectedDate:null|string = $state(null);
     let startTime:null|string = $state(null);
     let endTime:null|string = $state(null);
     let name = $state('');
     let email = $state('');
     let phoneNum = $state('');
-    let modelYear = $state('');
+    let make = $state('');
     let vin = $state('');
+
+    // Input field constants
+    const carMakes = ["Toyota", 'Mazda', 'Honda'];
+    const responses = ['TEXT', 'EMAIL'];
+    const carOperational = ['NO', 'YES'];
+    const courtesyCar = ['NO', 'YES'];
 
     const sendEmail = async () => {
         try {
@@ -96,27 +100,28 @@
     <section class="py-5 xl:mx-64">
         <Calendar bind:selectedDate bind:startTime bind:endTime/>
     </section>
-    <section class="bg-white">
+    <section class="bg-white pb-16">
         <h1 class='ml-10 font-bold text-blue text-2xl font-fontRoboto pt-5 xl:mx-64'>BOOK APPOINTMENT</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
-        <form method="POST" class='mx-10 my-5 xl:mx-64'>
-            <input type="text" name='name' class='border-2 mb-5 border-yellow w-full' placeholder="Name*" bind:value={name}>
-            <input type="text" name='phoneNum' class='border-2 mb-5 border-yellow w-full' placeholder="Cell Phone #*" bind:value={phoneNum}>
-            <input type="email" name='email' class='border-2 mb-5 border-yellow w-full' placeholder="Email Address*" bind:value={email}>
-            <input type="text" name='modelYear' class='border-2 mb-5 border-yellow w-full' placeholder="Model Year*" bind:value={modelYear}>
-            <input type="text" name='vin' class='border-2 mb-5 border-yellow w-full' placeholder="VIN*" bind:value={vin}>
-            <input type="number" name='captcha' class='border-2 mb-5 border-yellow w-full' placeholder="Captcha: {num1} + {num2} = ?*">
-            <fieldset class='mb-5'>
-                <legend class='font-bold text-blue border-0'>CHOICE OF REPLY</legend>
-                <div class="flex gap-4">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" bind:group={selectedOption} value="text" class='text-yellow focus:ring-yellow checked:bg-yellow checked:ring-2 checked:ring-yellow'/> TEXT
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" bind:group={selectedOption} value="email" class='text-yellow focus:ring-yellow checked:bg-yellow checked:ring-2 checked:ring-yellow'/> EMAIL
-                    </label>
-                </div>
-            </fieldset>
+        <form method="POST" class='mx-10 mt-5 xl:mx-64' enctype="multipart/form-data">
+            <SimpleInput field={name} label='name' labelName="Name" type='text'/>
+            <SimpleInput field={phoneNum} label='phoneNum' labelName="Phone Num" type='number'/> <!-- TODO: Implement phone number formatting here-->
+            <SimpleInput field={email} label='email' labelName="Email" type='email'/>
+            <SimpleInput field={vin} label='vin' labelName="VIN" type='text'/>
+            <Dropdown label='make' labelName='Car Make' option={make} options={carMakes}/>
+            <input type="file" accept=".pdf,.jpeg,.png" name='insuranceForm' id='insuranceForm' onchange={(e) => {
+                const target = e.target as HTMLInputElement;
+                if (target.files && target.files.length > 0) {
+                    file = target.files[0];
+                }
+            }} />
+            <Radio labelName='Car Operational?' options={carOperational} ref={choiceOperational} label='carOperational'/>
+            <Radio labelName='Courtesy Car?' options={courtesyCar} ref={choiceCourtesyCar} label='courtesyCar'/>
+            <Radio labelName='Choice of Reply' options={responses} ref={choiceResponse} label='responsePref'/>
+            <div class='my-5'>
+                <input type="checkbox" bind:checked={privateRepair} name='privateRepair' id='privateRepair' class='border-yellow mr-2'/>
+                <label for="privateRepair">Private Repair?</label>
+            </div>
             <input type="hidden" value={selectedDate} name='selectedDate'>
             <input type="hidden" value={startTime} name='startTime'>
             <input type="hidden" value={endTime} name='endTime'>

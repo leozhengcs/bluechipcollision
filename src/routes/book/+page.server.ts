@@ -1,8 +1,12 @@
 import type { Actions } from './$types';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '$lib/firebase';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Slot } from '$lib/types/calendar';
+import { supabase } from '$lib/supabase';
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
 function formatTime(time: string): string {
   const isPM = time.toLowerCase().includes('pm');
@@ -31,6 +35,38 @@ function formatTime(time: string): string {
     .padStart(2, '0')}`;
 }
 
+async function handleFileUpload(file: File) {
+  // Validate file size
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error('File size exceeds 5MB limit');
+  }
+
+  // Validate file type
+  if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+    throw new Error('Invalid file type. Please upload PDF, JPEG, or PNG');
+  }
+
+  const fileName = `${Date.now()}_${file.name}`;
+
+  try {
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('insurance-forms')
+      .upload(fileName, file, {
+        contentType: file.type,
+      });
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      throw new Error('File upload failed');
+    }
+    
+    return "";
+  } catch (error) {
+    console.error('Storage error:', error);
+    throw new Error('File storage failed');
+  }
+}
+
 export const actions = {
   default: async ({ request, fetch }) => {
     if (request.method !== 'POST') return;
@@ -44,6 +80,19 @@ export const actions = {
       const vin = data.get('vin');
       const responsePref = data.get('respondPref');
       const status = 'pending';
+      const insuranceForm = data.get('insuranceForm');
+      let uploadedFileUrl = null;
+
+      if (insuranceForm instanceof File) {
+        try {
+          uploadedFileUrl = await handleFileUpload(insuranceForm);
+        } catch (error) {
+          return fail(400, {
+            error: error instanceof Error ? error.message : 'File upload failed',
+            fields: Object.fromEntries(data.entries()),
+          });
+        }
+      }
 
       await addDoc(collection(db, 'forms'), {
         carMake,
@@ -53,12 +102,11 @@ export const actions = {
         vin,
         responsePref,
         status,
+        insuranceFormUrl: uploadedFileUrl,
       });
 
       let startTime = data.get('startTime');
-      console.log(startTime);
       let endTime = data.get('endTime');
-      console.log(endTime);
       if (!startTime || !endTime) {
         return;
       }
