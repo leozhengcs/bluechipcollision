@@ -25,7 +25,6 @@
         goto(`/admin/details?id=${formId}`);
     }
 
-
     // const formId = form.id;
     // const status = form.status;
     // const carMake = form.carMake;

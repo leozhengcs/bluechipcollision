@@ -35,6 +35,11 @@ function formatTime(time: string): string {
     .padStart(2, '0')}`;
 }
 
+/**
+ * Uploads the input file into the insurance bucket in Supabase
+ * @param file File of type `File`
+ * @returns The name of the stored file in Supabase.
+ */
 async function handleFileUpload(file: File) {
   // Validate file size
   if (file.size > MAX_FILE_SIZE) {
@@ -60,7 +65,7 @@ async function handleFileUpload(file: File) {
       throw new Error('File upload failed');
     }
     
-    return "";
+    return fileName;
   } catch (error) {
     console.error('Storage error:', error);
     throw new Error('File storage failed');
@@ -81,11 +86,11 @@ export const actions = {
       const responsePref = data.get('respondPref');
       const status = 'pending';
       const insuranceForm = data.get('insuranceForm');
-      let uploadedFileUrl = null;
+      let uploadedFileName = null;
 
       if (insuranceForm instanceof File) {
         try {
-          uploadedFileUrl = await handleFileUpload(insuranceForm);
+          uploadedFileName = await handleFileUpload(insuranceForm);
         } catch (error) {
           return fail(400, {
             error: error instanceof Error ? error.message : 'File upload failed',
@@ -102,7 +107,7 @@ export const actions = {
         vin,
         responsePref,
         status,
-        insuranceFormUrl: uploadedFileUrl,
+        insuranceForm: uploadedFileName,
       });
 
       let startTime = data.get('startTime');

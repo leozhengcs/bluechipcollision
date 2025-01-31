@@ -9,18 +9,20 @@
     const pending: DocumentData[] = [];
     const cancelled: DocumentData[] = [];
     data.forms.forEach((form) => {
-        switch(form.data.status) {
-            case "completed":
-                completed.push(form);
-                break;
-            case "pending":
-                pending.push(form);
-                break;
-            case "cancelled":
-                cancelled.push(form);
-                break;
-            default: // Should not ever get down here
-                throw new Error("Unrecognized Status Form");
+        if (Object.keys(form.data).length !== 0) {
+            switch(form.data.status) {
+                case "completed":
+                    completed.push(form);
+                    break;
+                case "pending":
+                    pending.push(form);
+                    break;
+                case "cancelled":
+                    cancelled.push(form);
+                    break;
+                default: // Should not ever get down here
+                    throw new Error("Unrecognized Status Form");
+            }
         }
     })
 </script>

@@ -1,9 +1,10 @@
 <script>
     import { footerState } from "../../../stores/footer.svelte";
+    import { onMount } from "svelte";
+
     footerState.show = false;
 
     const { data } = $props();
-    console.log(data);
     const docId = $state(data.id);
     let phoneNum = $state(data.phoneNum);
     let email = $state(data.email);
@@ -28,6 +29,12 @@
         default:
             throw new Error(`Unrecognized Status in Ticket.svelte Form: ${docId}`);
     }
+
+    // let documentId;
+
+    // onMount(() => {
+    //     // const data = db.
+    // })
 </script>
 
 <main class="bg-blue min-h-screen">

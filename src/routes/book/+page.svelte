@@ -1,6 +1,4 @@
 <script lang='ts'>
-    import { getRandomInt } from "$lib/utils/mathUtils";
-    import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import { footerState } from '../../stores/footer.svelte';
     import Calendar from "$lib/components/Calendar.svelte";
@@ -12,9 +10,9 @@
     footerState.show = false;
 
     async function navToConfirm(event: MouseEvent) {
-        // await sendEmail();
-        // await sendConfirm();
-        // goto('/confirm'); // Navigates to the booking confirmation page.
+        await sendEmail();
+        await sendConfirm();
+        goto('/confirm'); // Navigates to the booking confirmation page.
     }
 
     let file;
