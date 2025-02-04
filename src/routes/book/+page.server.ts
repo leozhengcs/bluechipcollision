@@ -4,6 +4,7 @@ import { db } from '$lib/firebase';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Slot } from '$lib/types/calendar';
 import { supabase } from '$lib/supabase';
+import { isEmpty } from '$lib/utils/stringHandlers';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -78,7 +79,7 @@ export const actions = {
 
     try {
       const data = await request.formData();
-      const carMake = data.get('carMake');
+      const carMake = data.get('make');
       const name = data.get('name');
       const phoneNum = data.get('phoneNum');
       const email = data.get('email');
@@ -89,7 +90,68 @@ export const actions = {
       const registrationNum = data.get('registrationNum');
       let uploadedFileName = null;
 
+      let startTime = data.get('startTime');
+      let endTime = data.get('endTime');
+      const date = data.get('selectedDate');
 
+      const requiredFields = [
+        { name: "Name", value: name },
+        { name: "Phone Number", value: phoneNum },
+        { name: "Email", value: email },
+        { name: "VIN", value: vin },
+        { name: "Car Make", value: carMake },
+        { name: "Booking Date", value: date },
+        { name: "Booking Time", value: startTime },
+      ];
+
+      if (!insuranceForm && isEmpty(registrationNum as string)) {
+          requiredFields.push({ name: "Insurance Information (File or Registration Number)", value: null });
+      }
+
+      // Check for missing fields PICK HERE - FILE does not have a .trim() method.
+      // const missingFields = requiredFields.filter(field => {
+      //   const value = field.value;
+
+      //   if (value as any instanceof File) {
+      //     return false;
+      //   }
+
+      //   if (typeof value === "string") {
+      //     return value.trim() === "";
+      //   }
+
+      //   return !value;
+      // });
+
+      // TODO: Thoroughly check through this section
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      // Collect missing fields
+      let missingFields = [];
+
+      if (!name) missingFields.push("Name");
+      if (!email || !emailRegex.test(email as string)) missingFields.push("Email");
+      if (!phoneNum) missingFields.push("Phone Number");
+      if (!vin) missingFields.push("VIN");
+      if (!carMake) missingFields.push("Car Make");
+      if (!date) missingFields.push("Booking Date");
+      if (!startTime) missingFields.push("Start Time");
+      if (!endTime) missingFields.push("End Time");
+
+      if (missingFields.length > 0) {
+        console.log("FAILING");
+        return fail(400, {
+          error: "Please fill out all required fields.", // TODO: Implement the custom errors here so that I can update form visually later.
+          values: {
+            name, email, phoneNum, vin, carMake, registrationNum,
+          }
+        });
+      }
+
+      console.log("Insurance");
+
+      // Trying to upload insurance form
       if (insuranceForm instanceof File && insuranceForm.size > 0) {
         try {
           uploadedFileName = await handleFileUpload(insuranceForm);
@@ -101,7 +163,7 @@ export const actions = {
         }
       }
 
-      // Check if they have at least an insurance form or registration number
+      console.log("adding doc");
 
       await addDoc(collection(db, 'forms'), {
         carMake,
@@ -114,15 +176,8 @@ export const actions = {
         insuranceForm: uploadedFileName || null,
       });
 
-      let startTime = data.get('startTime');
-      let endTime = data.get('endTime');
-      if (!startTime || !endTime) {
-        return;
-      }
-
       startTime = formatTime(startTime as string);
       endTime = formatTime(endTime as string);
-      const date = data.get('selectedDate');
 
       const startDateObject = new Date(`${date}T${startTime}:00`);
       const endDateObject = new Date(`${date}T${endTime}:00`);
@@ -130,7 +185,14 @@ export const actions = {
       const event = {
         start: startDateObject.toISOString(),
         end: endDateObject.toISOString(),
-        summary: 'Customer Booking',
+        summary: `
+          Customer Name: ${name}
+          Customer Phone Number: ${phoneNum}
+          Customer Email: ${email}
+          Customer Response Preference: ${responsePref}
+          Car Make: ${carMake}
+          VIN: ${vin}
+        `,
       } as Slot;
 
       const response = await fetch('/book', {

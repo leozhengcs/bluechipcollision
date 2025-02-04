@@ -28,8 +28,6 @@ export async function POST({ request }) {
       );
     }
 
-    console.log("IN SERVER", summary);
-
     // Convert start and end times to PST
     const timeZone = "America/Los_Angeles";
     const startPST = toZonedTime(new Date(start), timeZone);
