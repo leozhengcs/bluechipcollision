@@ -8,7 +8,6 @@ import { PRIVATE_SUPABASE_SECRET } from '$env/static/private';
 
 const supabase = createClient(PUBLIC_SUPABASE_URL, PRIVATE_SUPABASE_SECRET);
 
-
 /**
  * Creates a new temp signed URL that references the insurance form of the user that
  * @param filePath Name of the image file

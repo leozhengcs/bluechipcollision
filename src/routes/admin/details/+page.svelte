@@ -1,5 +1,6 @@
 <script>
     import { footerState } from "../../../stores/footer.svelte";
+    import SimpleInput from '$lib/components/SimpleInput.svelte';
     import { onMount } from "svelte";
 
     footerState.show = false;
@@ -14,6 +15,7 @@
     const status = $state(data.status);
     let carMake = $state(data.carMake);
     let name = $state(data.name);
+    let imageURL = $state(data.imageURL);
 
     let color = $state('');
     switch (status) {
@@ -29,12 +31,6 @@
         default:
             throw new Error(`Unrecognized Status in Ticket.svelte Form: ${docId}`);
     }
-
-    // let documentId;
-
-    // onMount(() => {
-    //     // const data = db.
-    // })
 </script>
 
 <main class="bg-blue min-h-screen">
@@ -54,6 +50,7 @@
         <label for="name" class='text-white font-fontInter text-lg'>VIN</label>
         <input type="text" id='name' name='vin' value={vin} class='w-full bg-blue border-yellow text-white'>
         <span class='text-white font-fontInter text-lg'>Images</span>
+
 
         <input type="hidden" name='docId' value={docId}>
         <button class='my-2 p-3 bg-yellow font-bold font-fontInter text-white'>Update</button>

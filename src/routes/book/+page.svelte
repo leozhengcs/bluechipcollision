@@ -10,8 +10,8 @@
     footerState.show = false;
 
     async function navToConfirm(event: MouseEvent) {
-        await sendEmail();
-        await sendConfirm();
+        // await sendEmail();
+        // await sendConfirm();
         goto('/confirm'); // Navigates to the booking confirmation page.
     }
 

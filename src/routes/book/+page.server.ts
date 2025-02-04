@@ -86,9 +86,11 @@ export const actions = {
       const responsePref = data.get('respondPref');
       const status = 'pending';
       const insuranceForm = data.get('insuranceForm');
+      const registrationNum = data.get('registrationNum');
       let uploadedFileName = null;
 
-      if (insuranceForm instanceof File) {
+
+      if (insuranceForm instanceof File && insuranceForm.size > 0) {
         try {
           uploadedFileName = await handleFileUpload(insuranceForm);
         } catch (error) {
@@ -99,6 +101,8 @@ export const actions = {
         }
       }
 
+      // Check if they have at least an insurance form or registration number
+
       await addDoc(collection(db, 'forms'), {
         carMake,
         name,
@@ -107,7 +111,7 @@ export const actions = {
         vin,
         responsePref,
         status,
-        insuranceForm: uploadedFileName,
+        insuranceForm: uploadedFileName || null,
       });
 
       let startTime = data.get('startTime');

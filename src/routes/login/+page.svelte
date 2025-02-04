@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from "svelte";
     import { footerState } from '../../stores/footer.svelte';
     footerState.show = false;
 </script>

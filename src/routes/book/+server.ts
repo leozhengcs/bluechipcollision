@@ -28,6 +28,8 @@ export async function POST({ request }) {
       );
     }
 
+    console.log("IN SERVER", summary);
+
     // Convert start and end times to PST
     const timeZone = "America/Los_Angeles";
     const startPST = toZonedTime(new Date(start), timeZone);
@@ -52,7 +54,6 @@ export async function POST({ request }) {
       end: { dateTime: formattedEnd, timeZone },
     };
 
-    console.log("booking")
     const res = await calendar.events.insert({
       calendarId: process.env.GOOGLE_CALENDAR_ID,
       requestBody: event,
