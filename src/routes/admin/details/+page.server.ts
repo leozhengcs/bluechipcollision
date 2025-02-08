@@ -1,4 +1,3 @@
-import { json } from "@sveltejs/kit";
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 import type { PageServerLoad, Actions } from './$types';
@@ -11,10 +10,10 @@ const supabase = createClient(PUBLIC_SUPABASE_URL, PRIVATE_SUPABASE_SECRET);
 /**
  * Creates a new temp signed URL that references the insurance form of the user that
  * @param filePath Name of the image file
- * @param expiresIn Number of seconds before the link expires, default 1 hour
+ * @param expiresIn Number of seconds before the link expires, default 10 minutes
  * @returns  The URL or error if something went wrong.
  */
-async function getSignedUrl(filePath: string, expiresIn: number = 60 * 60) {
+async function getSignedUrl(filePath: string, expiresIn: number = 60 * 10) {
     console.log(filePath);
     const { data, error } = await supabase.storage
         .from("insurance-forms")

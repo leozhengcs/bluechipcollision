@@ -15,7 +15,9 @@
     const status = $state(data.status);
     let carMake = $state(data.carMake);
     let name = $state(data.name);
-    let imageURL = $state(data.imageURL);
+    let insuranceURL = $state(data.imageURL);
+
+    console.log(insuranceURL);
 
     let color = $state('');
     switch (status) {
@@ -49,8 +51,10 @@
         <input type="text" id='email' name='email' bind:value={email} class='w-full bg-blue border-yellow text-white'>
         <label for="name" class='text-white font-fontInter text-lg'>VIN</label>
         <input type="text" id='name' name='vin' value={vin} class='w-full bg-blue border-yellow text-white'>
-        <span class='text-white font-fontInter text-lg'>Images</span>
-
+        {#if insuranceURL !== null}
+            <h2 class='text-white font-fontInter text-lg'>Insurance Form</h2>
+            <img src="{insuranceURL}" alt="">
+        {/if}
 
         <input type="hidden" name='docId' value={docId}>
         <button class='my-2 p-3 bg-yellow font-bold font-fontInter text-white'>Update</button>

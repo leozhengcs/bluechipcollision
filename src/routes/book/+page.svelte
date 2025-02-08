@@ -99,17 +99,14 @@
     }
 
     function handleDragOver(event: DragEvent) {
-        event.preventDefault();
         dragging = true;
     }
 
     function handleDragLeave(event: DragEvent) {
-        event.preventDefault();
         dragging = false;
     }
 
     function handleDrop(event: DragEvent) {
-        event.preventDefault();
         dragging = false;
         if (event.dataTransfer && event.dataTransfer.files.length > 0) {
             file = event.dataTransfer.files[0];

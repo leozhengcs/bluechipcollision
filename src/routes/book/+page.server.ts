@@ -53,6 +53,7 @@ async function handleFileUpload(file: File) {
   }
 
   const fileName = `${Date.now()}_${file.name}`;
+  console.log(fileName);
 
   try {
     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -105,7 +106,7 @@ export const actions = {
       ];
 
       if (!insuranceForm && isEmpty(registrationNum as string)) {
-          requiredFields.push({ name: "Insurance Information (File or Registration Number)", value: null });
+        requiredFields.push({ name: "Insurance Information (File or Registration Number)", value: null });
       }
 
       // Check for missing fields PICK HERE - FILE does not have a .trim() method.
@@ -140,7 +141,6 @@ export const actions = {
       if (!endTime) missingFields.push("End Time");
 
       if (missingFields.length > 0) {
-        console.log("FAILING");
         return fail(400, {
           error: "Please fill out all required fields.", // TODO: Implement the custom errors here so that I can update form visually later.
           values: {
@@ -149,12 +149,13 @@ export const actions = {
         });
       }
 
-      console.log("Insurance");
+      console.log(insuranceForm);
 
       // Trying to upload insurance form
       if (insuranceForm instanceof File && insuranceForm.size > 0) {
         try {
           uploadedFileName = await handleFileUpload(insuranceForm);
+          console.log(uploadedFileName);
         } catch (error) {
           return fail(400, {
             error: error instanceof Error ? error.message : 'File upload failed',
