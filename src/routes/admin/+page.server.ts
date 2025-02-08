@@ -3,6 +3,8 @@ import { db } from '$lib/firebase';
 import type { Firestore } from 'firebase/firestore';
 import { collection, getDocs } from 'firebase/firestore';
 import type { PageServerLoad } from './$types';
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "$env/static/private";
 
 async function getForms(db: Firestore) {
     const formsCollection = collection(db, 'forms');
@@ -17,8 +19,13 @@ export const load: PageServerLoad = async ({ cookies }) => {
         throw redirect(303, '/login');
     }
 
-    const forms = await getForms(db);
-    return {
-        forms,
-    };
+    try {
+        const decoded = jwt.verify(isAuthenticated, JWT_SECRET);
+        const forms = await getForms(db);
+        return {
+            forms,
+        };
+    } catch {
+        throw redirect(303, "/login");
+    }
 };

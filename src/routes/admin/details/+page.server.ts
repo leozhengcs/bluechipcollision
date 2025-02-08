@@ -10,7 +10,7 @@ const supabase = createClient(PUBLIC_SUPABASE_URL, PRIVATE_SUPABASE_SECRET);
 /**
  * Creates a new temp signed URL that references the insurance form of the user that
  * @param filePath Name of the image file
- * @param expiresIn Number of seconds before the link expires, default 10 minutes
+ * @param expiresIn Number of seconds before the link expires, deflt 10 minutes
  * @returns  The URL or error if something went wrong.
  */
 async function getSignedUrl(filePath: string, expiresIn: number = 60 * 10) {

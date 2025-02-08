@@ -1,6 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { adminUser, adminPass } from '$env/static/private';
+import { adminUser, adminPass, JWT_SECRET } from "$env/static/private";
+import jwt from "jsonwebtoken";
 
 export const actions = {
 	default: async ({ request, cookies }) => {
@@ -17,8 +18,13 @@ export const actions = {
             return fail(401, { error: 'Invalid username or password' });
         }
 
-        // TODO: Utilize Crpyto to generate a secure token instead of using 'true'.
-        cookies.set('authenticated', 'true', {
+        const token = jwt.sign(
+            { username },
+            JWT_SECRET,
+            { expiresIn: "3h" }  // Token expiration
+        );
+
+        cookies.set('authenticated', token, {
             path: '/',
             httpOnly: true,
             secure: true,
