@@ -1,13 +1,27 @@
 import type { Actions } from './$types';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '$lib/firebase';
-import { fail, redirect } from '@sveltejs/kit';
-import type { Slot } from '$lib/types/calendar';
+import { fail, json, redirect } from '@sveltejs/kit';
+import { google } from "googleapis";
 import { supabase } from '$lib/supabase';
 import { isEmpty } from '$lib/utils/stringHandlers';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png'];
+
+const GOOGLE_CLOUD_CREDENTIALS = {
+  type: process.env.GOOGLE_CLOUD_TYPE,
+  project_id: process.env.GOOGLE_CLOUD_PROJECT_ID,
+  private_key_id: process.env.GOOGLE_CLOUD_PRIVATE_KEY_ID,
+  private_key: process.env.GOOGLE_CLOUD_PRIVATE_KEY,
+  client_email: process.env.GOOGLE_CLOUD_CLIENT_EMAIL,
+  client_id: process.env.GOOGLE_CLOUD_CLIENT_ID,
+  auth_uri: process.env.GOOGLE_CLOUD_AUTH_URI,
+  token_uri: process.env.GOOGLE_CLOUD_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.GOOGLE_CLOUD_AUTH_PROVIDER,
+  client_x509_cert_url: process.env.GOOGLE_CLOUD_CLIENT,
+  universe_domain: process.env.GOOGLE_CLOUD_UNIVERSE_DOMAIN,
+};
 
 function formatTime(time: string): string {
   const isPM = time.toLowerCase().includes('pm');
@@ -41,7 +55,7 @@ function formatTime(time: string): string {
  * @param file File of type `File`
  * @returns The name of the stored file in Supabase.
  */
-async function handleFileUpload(file: File) {
+async function handleFileUploadInsurance(file: File) {
   // Validate file size
   if (file.size > MAX_FILE_SIZE) {
     throw new Error('File size exceeds 5MB limit');
@@ -74,8 +88,47 @@ async function handleFileUpload(file: File) {
   }
 }
 
+/**
+ * Uploads the input file into the damages bucket in Supabase
+ * @param file File of type `File`
+ * @returns The name of the stored file in Supabase.
+ */
+async function handleFileUploadDamages(file: File) {
+  console.log("Truing to upload: ", file);
+  // Validate file size
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error('File size exceeds 5MB limit');
+  }
+
+  // Validate file type
+  if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+    throw new Error('Invalid file type. Please upload PDF, JPEG, or PNG');
+  }
+
+  const fileName = `${Date.now()}_${file.name}`;
+  console.log(fileName);
+
+  try {
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('damage-images')
+      .upload(fileName, file, {
+        contentType: file.type,
+      });
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      throw new Error('File upload failed');
+    }
+    
+    return fileName;
+  } catch (error) {
+    console.error('Storage error:', error);
+    throw new Error('File storage failed');
+  }
+}
+
 export const actions = {
-  default: async ({ request, fetch }) => {
+  default: async ({ request }) => {
     if (request.method !== 'POST') return;
 
     try {
@@ -89,7 +142,9 @@ export const actions = {
       const status = 'pending';
       const insuranceForm = data.get('insuranceForm');
       const registrationNum = data.get('registrationNum');
+      const damageImages = data.getAll('damagePhotos');
       let uploadedFileName = null;
+      let uploadedDamageFilesNames: string[] = [];
 
       let startTime = data.get('startTime');
       let endTime = data.get('endTime');
@@ -105,58 +160,46 @@ export const actions = {
         { name: "Booking Time", value: startTime },
       ];
 
-      if (!insuranceForm && isEmpty(registrationNum as string)) {
+      if (!insuranceForm && registrationNum && isEmpty(registrationNum as string)) {
         requiredFields.push({ name: "Insurance Information (File or Registration Number)", value: null });
       }
 
-      // Check for missing fields PICK HERE - FILE does not have a .trim() method.
-      // const missingFields = requiredFields.filter(field => {
-      //   const value = field.value;
-
-      //   if (value as any instanceof File) {
-      //     return false;
-      //   }
-
-      //   if (typeof value === "string") {
-      //     return value.trim() === "";
-      //   }
-
-      //   return !value;
-      // });
-
-      // TODO: Thoroughly check through this section
-
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // Collect missing fields
+      // Validating Fields
       let missingFields = [];
+      let filledFields: Record<string, string> = {};
 
       if (!name) missingFields.push("Name");
+      else filledFields.name = name as string;
       if (!email || !emailRegex.test(email as string)) missingFields.push("Email");
+      else filledFields.email = email as string
       if (!phoneNum) missingFields.push("Phone Number");
+      else filledFields.phoneNum = phoneNum as string;
       if (!vin) missingFields.push("VIN");
+      else filledFields.vin = vin as string;
       if (!carMake) missingFields.push("Car Make");
+      else filledFields.carMake = carMake as string;
       if (!date) missingFields.push("Booking Date");
+      else filledFields.date = date as string;
       if (!startTime) missingFields.push("Start Time");
-      if (!endTime) missingFields.push("End Time");
+      else filledFields.startTime = startTime as string;
 
       if (missingFields.length > 0) {
         return fail(400, {
           error: "Please fill out all required fields.", // TODO: Implement the custom errors here so that I can update form visually later.
-          values: {
-            name, email, phoneNum, vin, carMake, registrationNum,
-          }
+          missingFields,
+          values: filledFields
         });
       }
-
-      console.log(insuranceForm);
 
       // Trying to upload insurance form
       if (insuranceForm instanceof File && insuranceForm.size > 0) {
         try {
-          uploadedFileName = await handleFileUpload(insuranceForm);
+          uploadedFileName = await handleFileUploadInsurance(insuranceForm);
           console.log(uploadedFileName);
         } catch (error) {
+          console.log("Uploading insurance failed");
           return fail(400, {
             error: error instanceof Error ? error.message : 'File upload failed',
             fields: Object.fromEntries(data.entries()),
@@ -164,7 +207,17 @@ export const actions = {
         }
       }
 
-      console.log("adding doc");
+      for (const file of damageImages) {
+        if (file instanceof File && file.size > 0) {
+          try {
+            const fileName = await handleFileUploadDamages(file);
+            uploadedDamageFilesNames.push(fileName);
+          } catch (err) {
+            console.log("Uploading damages failed");
+            return fail(400, { error: err instanceof Error ? err.message : 'File upload failed' });
+          }
+        }
+      }
 
       await addDoc(collection(db, 'forms'), {
         carMake,
@@ -175,43 +228,54 @@ export const actions = {
         responsePref,
         status,
         insuranceForm: uploadedFileName || null,
+        registrationNum: registrationNum,
+        damageImages: uploadedDamageFilesNames,
       });
 
       startTime = formatTime(startTime as string);
       endTime = formatTime(endTime as string);
 
+      const timeZone = "America/Los_Angeles";
+
       const startDateObject = new Date(`${date}T${startTime}:00`);
       const endDateObject = new Date(`${date}T${endTime}:00`);
 
       const event = {
-        start: startDateObject.toISOString(),
-        end: endDateObject.toISOString(),
-        summary: `
-          Customer Name: ${name}
-          Customer Phone Number: ${phoneNum}
-          Customer Email: ${email}
-          Customer Response Preference: ${responsePref}
-          Car Make: ${carMake}
-          VIN: ${vin}
-        `,
-      } as Slot;
+        start: { dateTime: startDateObject.toISOString(), timeZone },
+        end: { dateTime: endDateObject.toISOString(), timeZone },
+        summary: 'Customer Booking',
+        description: `
+Customer Name: ${name || 'N/A'}
+Customer Phone Number: ${phoneNum || 'N/A'}
+Customer Email: ${email || 'N/A'}
+Customer Response Preference: ${responsePref || 'N/A'}
+Car Make: ${carMake || 'N/A'}
+VIN: ${vin || 'N/A'}
+      `};
 
-      const response = await fetch('/book', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(event),
+      // Authenticate with Google API
+      const auth = new google.auth.GoogleAuth({
+        credentials: GOOGLE_CLOUD_CREDENTIALS,
+        scopes: ['https://www.googleapis.com/auth/calendar'],
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        console.error('Error from /book:', error);
-        throw new Error('Failed to process booking');
+      const calendar = google.calendar({ version: 'v3', auth });
+
+      const res = await calendar.events.insert({
+        calendarId: process.env.GOOGLE_CALENDAR_ID,
+        requestBody: event,
+      });
+
+      if (res.status !== 200) {
+        console.log("calednar insert failed");
+        return fail(500, { success: false, error: "Failed to book slot" });
       }
 
     } catch (error) {
         console.error('Error updating document:', error);
-        throw redirect(303, '/book');
+        return fail(400, { success: false, error: "Failed to process booking" });
     }
-    return redirect(303, '/confirm');
+
+    throw redirect(303, '/confirm');
   },
 } satisfies Actions;

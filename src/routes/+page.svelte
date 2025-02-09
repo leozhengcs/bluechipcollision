@@ -35,5 +35,8 @@
         <h2 class="font-bold font-fontInter text-base text-white py-2 mx-10 xl:mx-32 2xl:mx-64 xl:text-sm">Get Your Car Looking Like New — For FREE!</h2>
         <p class='text-white text-sm leading-relaxed xl:text-base ml-10 xl:mx-32 2xl:mx-64'>Join the Take Care Auto Club Appearance Package and enjoy the peace of mind that comes with free repairs on dents, scratches, and more!</p>
         <p class='text-white text-sm leading-relaxed ml-10 xl:mx-32 2xl:mx-64 xl:text-base'>Stop by the front desk today to learn how you can start saving and driving stress-free with our exclusive Appearance Package!</p>
+        <div class='pt-10'>
+            <div class="elfsight-app-ad760cf3-4036-4af3-ac9e-9e233c467f16" data-elfsight-app-lazy></div>
+        </div>
     </section>
 </main>

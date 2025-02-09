@@ -14,7 +14,6 @@ const supabase = createClient(PUBLIC_SUPABASE_URL, PRIVATE_SUPABASE_SECRET);
  * @returns  The URL or error if something went wrong.
  */
 async function getSignedUrl(filePath: string, expiresIn: number = 60 * 10) {
-    console.log(filePath);
     const { data, error } = await supabase.storage
         .from("insurance-forms")
         .createSignedUrl(filePath, expiresIn);
