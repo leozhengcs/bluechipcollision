@@ -61,7 +61,7 @@
 			</div>
 			<div class='h-full flex justify-row items-center'>
 				<img src="/icons/location.png" alt="" class='w-auto h-[35%] px-2'>
-				<a href='https://g.co/kgs/MfwmnVF' class="text-white text-sm hover:underline">8808 Laurel St #1, Vancouver</a>
+				<a href='https://g.co/kgs/MfwmnVF' class="text-white text-sm hover:underline">8808 Laurel St #1, Vancouver, BC V6P 3V8</a>
 			</div>
 		</div>
 		<div class='flex flex-row items-center sm:gap-2 2xl:gap-5'>

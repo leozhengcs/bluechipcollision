@@ -1,11 +1,11 @@
 <script lang='ts'>
     import { footerState } from '../../stores/footer.svelte';
     import Calendar from "$lib/components/Calendar.svelte";
-    import emailjs from 'emailjs-com';
     import SimpleInput from '$lib/components/SimpleInput.svelte';
     import Dropdown from '$lib/components/Dropdown.svelte';
     import Radio from '$lib/components/Radio.svelte';
     import { get, writable } from 'svelte/store';
+    import { sendEmail, sendConfirm } from '$lib/utils/eventHandlers';
     
     footerState.show = false;
     const MAX_DAMAGE_FILES = 3;
@@ -38,57 +38,9 @@
     const carOperational = ['NO', 'YES'];
     const courtesyCar = ['NO', 'YES'];
 
-    const sendEmail = async () => {
-        try {
-            const templateID = 'template_ms7apnd'; // Service ID from EmailJS
-            const publicKey = 'dLmCzZJKlKbV1UctL'; // Template ID from EmailJS
-            const serviceID = 'service_3br9lld'; // Public Key from EmailJS
-
-            const templateParams = {
-                name: name,
-                to_email: email,
-                startTime: startTime,
-                endTime: endTime,
-            };
-
-            // Send email using EmailJS
-            const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
-
-            if (response.status !== 200) {
-                throw new Error(`Error sending email ${response.text}.`)
-            }
-        } catch (error) {
-            console.error('Error sending email:', error);
-        }
-    };
-
-    const sendConfirm = async () => {
-        try {
-            const templateID = 'template_ms7apnd'; // Template ID from EmailJS
-            const publicKey = 'dLmCzZJKlKbV1UctL'; // Public Key from EmailJS
-            const serviceID = 'service_3br9lld'; // Service ID from EmailJS
-
-            const templateParams = {
-                name: name,
-                user_email: email,
-                to_email: 'bluechipcollision@gmail.com',
-                startTime: startTime,
-                endTime: endTime,
-            };
-
-            // Send email using EmailJS
-            const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
-            if (response.status !== 200) {
-                throw new Error(`Error sending email ${response.text}.`)
-            }
-        } catch (error) {
-            console.error('Error sending email:', error);
-        }
-    };
-
     async function sendEmails(event: MouseEvent) {
-        // await sendEmail();
-        // await sendConfirm();
+        // await sendEmail(name, email, startTime, endTime);
+        // await sendConfirm(name, startTime, endTime);
     }
 
     function isDuplicate(file: File): boolean {

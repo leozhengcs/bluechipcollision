@@ -1,21 +1,76 @@
 <script lang='ts'>
     import Banner from '$lib/components/Banner.svelte';
     import Service from '$lib/components/Service.svelte';
-    import { onMount } from 'svelte';
-    import { getRandomInt } from '$lib/utils/mathUtils';
     import { footerState } from '../../stores/footer.svelte';
+    import { sendContact } from '$lib/utils/eventHandlers';
+    import { onMount } from 'svelte';
     footerState.show = true
 
-    let num1: number;
-    let num2: number;
-    let res: number;
+    let {
+        form
+    } = $props();
 
-    onMount(async () => {
-        num1 = getRandomInt(1, 10);
-        num2 = getRandomInt(1, 10);
-        res = num1 + num2;
+    let name = $state('');
+    let email = $state('');
+    let subject = $state('');
+    let content = $state('');
+
+    onMount(() => {
+        if (form?.error) {
+            if (form.values?.name) {
+                name = form.values.name as string
+            }
+            if (form.values?.email) {
+                email = form.values.email as string
+            }
+            if (form.values?.subject) {
+                subject = form.values.subject as string
+            }
+            if (form.values?.content) {
+                content = form.values.content as string
+            }
+        }
+
+        if (form?.success) {
+            sendContact(
+                form.values.name as string, 
+                form.values.email as string, 
+                form.values.subject as string, 
+                form.values.content as string
+            );
+
+            // User feedback
+        }
     });
-    
+
+    import { ReCaptcha } from '@mac-barrett/svelte-recaptcha';
+    const SITE_KEY = '6Ld25eUqAAAAAHZNzbCIZ18u7royaZTdmzyDRsAU';
+    let Captcha: ReCaptcha;
+    let token = $state(''); // Store the ReCaptcha token
+
+    async function handleSubmit(event: Event) {
+        event.preventDefault();
+
+        if (!Captcha) {
+            console.error("ReCaptcha is not initialized.");
+            return;
+        }
+
+        try {
+            // Correct method to retrieve ReCaptcha token
+            token = Captcha.getRecaptchaResponse(); 
+
+            // Inject token into hidden input
+            const formElement = event.target as HTMLFormElement;
+            const tokenInput = formElement.querySelector<HTMLInputElement>("input[name='token']");
+            if (tokenInput) tokenInput.value = token;
+
+            // Submit the form
+            formElement.submit();
+        } catch (error) {
+            console.error("ReCaptcha Error:", error);
+        }
+    }
 </script>
 
 <main class='w-full h-auto shadow-sm bg-blue'>
@@ -72,12 +127,13 @@
     <section class='bg-white w-screen h-auto py-5'>
         <h1 class='ml-10 font-bold text-blue text-2xl font-fontRoboto xl:mx-32 2xl:mx-64'>EMAIL US</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:mx-32 2xl:mx-64'/>
-        <form action="" class='mx-10 my-5 xl:mx-32 2xl:mx-64'>
-            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="Name*">
-            <input type="email" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="Email Address*">
-            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="Subject*">
-            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full min-h-[15vh] placeholder:absolute placeholder:top-3' placeholder="Message*">
-            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="{num1} + {num2} = ?*">
+        <form method="POST" onsubmit={handleSubmit} class='mx-10 my-5 xl:mx-32 2xl:mx-64'>
+            <input name='name' bind:value={name} type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full text-white' placeholder="Name*">
+            <input name='email' bind:value={email} type="email" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full text-white' placeholder="Email Address*">
+            <input name='subject' bind:value={subject} type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full text-white' placeholder="Subject*">
+            <input name='content' bind:value={content} type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full min-h-[15vh] placeholder:absolute placeholder:top-3 text-white' placeholder="Message*">
+            <input type="hidden" name="token" bind:value={token}>
+            <ReCaptcha bind:this={Captcha} { SITE_KEY } captchaStyle={{theme: 'dark', size: 'compact'}} />
             <button class='bg-blue p-2 text-white font-fontInter font-bold text-sm'>Send Message</button>
         </form>
     </section>

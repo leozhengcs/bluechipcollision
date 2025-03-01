@@ -1,5 +1,6 @@
 import { headerState } from "../../stores/header.svelte";
 import type { Slot } from '$lib/types/calendar';
+import emailjs from 'emailjs-com';
 
 export function handleClickOutside(
     event: MouseEvent,
@@ -34,3 +35,75 @@ export const bookSlot = async (slot: Slot, fetchFn: typeof fetch) => {
     const data = await res.json();
     return data;
 };
+
+export const sendEmail = async (name: string, recipient: string, startTime: string, endTime: string) => {
+    try {
+        const templateID = 'template_ms7apnd'; // Service ID from EmailJS
+        const publicKey = 'dLmCzZJKlKbV1UctL'; // Template ID from EmailJS
+        const serviceID = 'service_3br9lld'; // Public Key from EmailJS
+
+        const templateParams = {
+            name: name,
+            to_email: recipient,
+            startTime: startTime,
+            endTime: endTime,
+        };
+
+        // Send email using EmailJS
+        const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
+
+        if (response.status !== 200) {
+            throw new Error(`Error sending email ${response.text}.`)
+        }
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+};
+
+export const sendConfirm = async (name: string, startTime: string, endTime: string) => {
+    try {
+        const templateID = 'template_ms7apnd'; // Template ID from EmailJS
+        const publicKey = 'dLmCzZJKlKbV1UctL'; // Public Key from EmailJS
+        const serviceID = 'service_3br9lld'; // Service ID from EmailJS
+
+        const templateParams = {
+            name: name,
+            to_email: 'bluechipcollision@gmail.com',
+            startTime: startTime,
+            endTime: endTime,
+        };
+
+        // Send email using EmailJS
+        const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
+        if (response.status !== 200) {
+            throw new Error(`Error sending email ${response.text}.`)
+        }
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+};
+
+export const sendContact = async (name: string, email: string, subject: string, content: string) => {
+    try {
+        const templateID = 'template_74cvcic'; // Template ID from EmailJS
+        const publicKey = 'dLmCzZJKlKbV1UctL'; // Public Key from EmailJS
+        const serviceID = 'service_3br9lld'; // Service ID from EmailJS
+
+        const templateParams = {
+            from_name: name,
+            from_email: email,
+            to_email: 'bluechipcollision@gmail.com',
+            subject: subject,
+            message: content,
+        };
+
+        // Send email using EmailJS
+        const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
+        if (response.status !== 200) {
+            throw new Error(`Error sending email ${response.text}.`)
+        }
+        console.log(response);
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+}
