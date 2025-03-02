@@ -8,6 +8,8 @@
     import { sendEmail, sendConfirm } from '$lib/utils/eventHandlers';
     import { onMount } from 'svelte';
     import { ReCaptcha } from '@mac-barrett/svelte-recaptcha';
+    import { goto } from '$app/navigation';
+  import { enhance } from '$app/forms';
 
     const SITE_KEY = '6Ld25eUqAAAAAHZNzbCIZ18u7royaZTdmzyDRsAU';
     let Captcha: ReCaptcha;
@@ -53,7 +55,7 @@
 
     async function sendEmails() {
         // await sendEmail(name, email, startTime, endTime);
-        sendConfirm(name, email, startTime as string, endTime as string);
+        sendConfirm(name, email, startTime as string, endTime as string, selectedDate as string);
     }
 
     function isDuplicate(file: File): boolean {
@@ -176,28 +178,16 @@
             });
 
             const result = await response.json();
+            console.log(result);
             if (response.ok) {
                 sendEmails();
+                goto('/confirm');
             } else {
-                console.error("Booking failed:", result.error);
+                console.error("Booking failed");
             }
         } catch (error) {
             console.error("Error booking:", error);
         }
-
-        // try {
-        //     // Correct method to retrieve ReCaptcha token
-        //     token = Captcha.getRecaptchaResponse(); 
-
-        //     // Inject token into hidden input
-        //     const formElement = event.target as HTMLFormElement;
-        //     const tokenInput = formElement.querySelector<HTMLInputElement>("input[name='token']");
-        //     if (tokenInput) tokenInput.value = token;
-
-        //     // Submit the form
-        // } catch (error) {
-        //     console.error("ReCaptcha Error:", error);
-        // }
     }
 </script>
 
@@ -218,7 +208,7 @@
     <section class="bg-white pb-16">
         <h1 class='ml-10 font-bold text-blue text-2xl font-fontRoboto pt-5 xl:mx-64'>BOOK APPOINTMENT</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
-        <form method="POST" class='mx-10 mt-5 xl:mx-64' enctype="multipart/form-data" onsubmit={handleSubmit}>
+        <form method="POST" class='mx-10 mt-5 xl:mx-64' enctype="multipart/form-data" onsubmit={handleSubmit} use:enhance>
             <SimpleInput bind:field={name} label='name' labelName="Name" type='text'/>
             <SimpleInput bind:field={phoneNum} label='phoneNum' labelName="Phone Num" type='number'/> <!-- TODO: Implement phone number formatting here-->
             <SimpleInput bind:field={email} label='email' labelName="Email" type='text'/>

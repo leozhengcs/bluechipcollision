@@ -1,7 +1,7 @@
 import type { Actions } from './$types';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '$lib/firebase';
-import { fail, json, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { google } from "googleapis";
 import { supabase } from '$lib/supabase';
 import { isEmpty } from '$lib/utils/stringHandlers';
@@ -189,6 +189,7 @@ export const actions = {
       else filledFields.startTime = startTime as string;
 
       if (!token) {
+        console.log(token);
         return { success: false, error: 'No token provided', values: filledFields }; 
       }
 
