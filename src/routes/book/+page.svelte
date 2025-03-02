@@ -161,7 +161,6 @@
             return;
         }
         formData.append('token', token);
-        console.log(Object.fromEntries(formData.entries()));
         const selectedFiles = get(fileDamages);
 
         selectedFiles.forEach(file => formData.append("damagePhotos", file));
@@ -178,12 +177,12 @@
             });
 
             const result = await response.json();
-            console.log(result);
+            // Add error handling here
             if (response.ok) {
                 sendEmails();
                 goto('/confirm');
             } else {
-                console.error("Booking failed");
+                console.error("Booking failed: ", result.error);
             }
         } catch (error) {
             console.error("Error booking:", error);

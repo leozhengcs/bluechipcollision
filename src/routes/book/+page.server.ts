@@ -188,6 +188,15 @@ export const actions = {
       if (!startTime) missingFields.push("Start Time");
       else filledFields.startTime = startTime as string;
 
+      if (missingFields.length > 0) {
+        return fail(400, {
+          success: false,
+          error: "Please fill out all required fields.", // TODO: Implement the custom errors here so that I can update form visually later.
+          missingFields,
+          values: filledFields
+        });
+      }
+
       if (!token) {
         console.log(token);
         return { success: false, error: 'No token provided', values: filledFields }; 
@@ -205,19 +214,10 @@ export const actions = {
 
           const data = await response.json();
           if (!data.success) {
-              return { success: false, values: filledFields};
+              return fail(400, { success: false, values: filledFields});
           }
       } catch (error) {
-          return { success: false, error: 'Captcha validation failed', values: filledFields };
-      }
-
-      if (missingFields.length > 0) {
-        return fail(400, {
-          success: false,
-          error: "Please fill out all required fields.", // TODO: Implement the custom errors here so that I can update form visually later.
-          missingFields,
-          values: filledFields
-        });
+          return fail(400, { success: false, error: 'Captcha validation failed', values: filledFields });
       }
 
       // Trying to upload insurance form
