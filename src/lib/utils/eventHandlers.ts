@@ -60,24 +60,26 @@ export const sendEmail = async (name: string, recipient: string, startTime: stri
     }
 };
 
-export const sendConfirm = async (name: string, startTime: string, endTime: string) => {
+export const sendConfirm = async (name: string, recipient: string, startTime: string, endTime: string) => {
     try {
         const templateID = 'template_ms7apnd'; // Template ID from EmailJS
         const publicKey = 'dLmCzZJKlKbV1UctL'; // Public Key from EmailJS
         const serviceID = 'service_3br9lld'; // Service ID from EmailJS
 
+        console.log(startTime);
+
         const templateParams = {
             name: name,
-            to_email: 'bluechipcollision@gmail.com',
+            to_email: recipient,
             startTime: startTime,
             endTime: endTime,
         };
 
         // Send email using EmailJS
-        const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
-        if (response.status !== 200) {
-            throw new Error(`Error sending email ${response.text}.`)
-        }
+        // const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
+        // if (response.status !== 200) {
+        //     throw new Error(`Error sending email ${response.text}.`)
+        // }
     } catch (error) {
         console.error('Error sending email:', error);
     }

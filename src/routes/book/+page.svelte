@@ -6,7 +6,13 @@
     import Radio from '$lib/components/Radio.svelte';
     import { get, writable } from 'svelte/store';
     import { sendEmail, sendConfirm } from '$lib/utils/eventHandlers';
-    
+    import { onMount } from 'svelte';
+    import { ReCaptcha } from '@mac-barrett/svelte-recaptcha';
+
+    const SITE_KEY = '6Ld25eUqAAAAAHZNzbCIZ18u7royaZTdmzyDRsAU';
+    let Captcha: ReCaptcha;
+    let token = $state(''); // Store the ReCaptcha token  
+
     footerState.show = false;
     const MAX_DAMAGE_FILES = 3;
 
@@ -15,12 +21,19 @@
     let dragging_insurance = $state(false);
     let dragging_damages = $state(false);
 
-    let { form } = $props();
+    const { form } = $props();
+
+    onMount(() => {
+        if (form?.error) {
+            console.log("Error: ", form.error);
+        }
+    })
         
     let choiceResponse = $state('TEXT');
     let choiceOperational = $state('NO');
     let choiceCourtesyCar = $state('NO');
     let privateRepair = $state(false);
+
     // TODO: Add form validation for these parts.
     let selectedDate:null|FormDataEntryValue = $state(null);
     let startTime:null|FormDataEntryValue = $state(null);
@@ -38,9 +51,9 @@
     const carOperational = ['NO', 'YES'];
     const courtesyCar = ['NO', 'YES'];
 
-    async function sendEmails(event: MouseEvent) {
+    async function sendEmails() {
         // await sendEmail(name, email, startTime, endTime);
-        // await sendConfirm(name, startTime, endTime);
+        sendConfirm(name, email, startTime as string, endTime as string);
     }
 
     function isDuplicate(file: File): boolean {
@@ -138,22 +151,53 @@
 }
 
     async function handleSubmit(event: Event) {
+        token = Captcha.getRecaptchaResponse();  
+
         const formData = new FormData(event.target as HTMLFormElement);
+        if (!token) {
+            console.error("Failed to retrieve reCAPTCHA token.");
+            return;
+        }
+        formData.append('token', token);
+        console.log(Object.fromEntries(formData.entries()));
         const selectedFiles = get(fileDamages);
-        console.log(formData);
 
         selectedFiles.forEach(file => formData.append("damagePhotos", file));
 
+        if (!Captcha) {
+            console.error("ReCaptcha is not initialized. Peter");
+            return;
+        }
+
         try {
             const response = await fetch('/book', {
-                method: "POST",
+                method: 'POST',
                 body: formData
             });
 
-        } catch (err) {
-            console.error("Error in /book frontend: ", err);
+            const result = await response.json();
+            if (response.ok) {
+                sendEmails();
+            } else {
+                console.error("Booking failed:", result.error);
+            }
+        } catch (error) {
+            console.error("Error booking:", error);
         }
 
+        // try {
+        //     // Correct method to retrieve ReCaptcha token
+        //     token = Captcha.getRecaptchaResponse(); 
+
+        //     // Inject token into hidden input
+        //     const formElement = event.target as HTMLFormElement;
+        //     const tokenInput = formElement.querySelector<HTMLInputElement>("input[name='token']");
+        //     if (tokenInput) tokenInput.value = token;
+
+        //     // Submit the form
+        // } catch (error) {
+        //     console.error("ReCaptcha Error:", error);
+        // }
     }
 </script>
 
@@ -274,6 +318,8 @@
                 <input type="checkbox" bind:checked={privateRepair} name='privateRepair' id='privateRepair' class='border-yellow mr-2'/>
                 <label for="privateRepair">Private Repair?</label>
             </div>
+            <input type="hidden" name="token" bind:value={token}>
+            <ReCaptcha bind:this={Captcha} { SITE_KEY } captchaStyle={{theme: 'dark', size: 'compact'}} />
             <input type="hidden" value={selectedDate} name='selectedDate'>
             <input type="hidden" value={startTime} name='startTime'>
             <input type="hidden" value={endTime} name='endTime'>

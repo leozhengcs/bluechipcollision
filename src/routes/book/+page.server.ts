@@ -5,9 +5,11 @@ import { fail, json, redirect } from '@sveltejs/kit';
 import { google } from "googleapis";
 import { supabase } from '$lib/supabase';
 import { isEmpty } from '$lib/utils/stringHandlers';
+import { RECAPTCHA_SECRET } from '$env/static/private';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png'];
+const VERIFICATION_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
 const GOOGLE_CLOUD_CREDENTIALS = {
   type: process.env.GOOGLE_CLOUD_TYPE,
@@ -130,6 +132,7 @@ async function handleFileUploadDamages(file: File) {
 export const actions = {
   default: async ({ request }) => {
     if (request.method !== 'POST') return;
+    let filledFields: Record<string, string> = {};
 
     try {
       const data = await request.formData();
@@ -143,6 +146,7 @@ export const actions = {
       const insuranceForm = data.get('insuranceForm');
       const registrationNum = data.get('registrationNum');
       const damageImages = data.getAll('damagePhotos');
+      const token = data.get("token") as string;
       let uploadedFileName = null;
       let uploadedDamageFilesNames: string[] = [];
 
@@ -168,7 +172,6 @@ export const actions = {
 
       // Validating Fields
       let missingFields = [];
-      let filledFields: Record<string, string> = {};
 
       if (!name) missingFields.push("Name");
       else filledFields.name = name as string;
@@ -185,8 +188,31 @@ export const actions = {
       if (!startTime) missingFields.push("Start Time");
       else filledFields.startTime = startTime as string;
 
+      if (!token) {
+        return { success: false, error: 'No token provided', values: filledFields }; 
+      }
+
+      try {
+          const response = await fetch(VERIFICATION_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              secret: RECAPTCHA_SECRET,
+              response: token.toString()
+            })
+          });
+
+          const data = await response.json();
+          if (!data.success) {
+              return { success: false, values: filledFields};
+          }
+      } catch (error) {
+          return { success: false, error: 'Captcha validation failed', values: filledFields };
+      }
+
       if (missingFields.length > 0) {
         return fail(400, {
+          success: false,
           error: "Please fill out all required fields.", // TODO: Implement the custom errors here so that I can update form visually later.
           missingFields,
           values: filledFields
@@ -201,8 +227,9 @@ export const actions = {
         } catch (error) {
           console.log("Uploading insurance failed");
           return fail(400, {
-            error: error instanceof Error ? error.message : 'File upload failed',
-            fields: Object.fromEntries(data.entries()),
+            success: false, 
+            error: "File upload failed", 
+            values: filledFields
           });
         }
       }
@@ -214,7 +241,7 @@ export const actions = {
             uploadedDamageFilesNames.push(fileName);
           } catch (err) {
             console.log("Uploading damages failed");
-            return fail(400, { error: err instanceof Error ? err.message : 'File upload failed' });
+            return fail(400, { success: false, error: "File upload failed", values: filledFields });
           }
         }
       }
@@ -267,15 +294,15 @@ VIN: ${vin || 'N/A'}
       });
 
       if (res.status !== 200) {
-        console.log("calednar insert failed");
-        return fail(500, { success: false, error: "Failed to book slot" });
+        console.log("calendar insert failed");
+        return fail(500, { success: false, error: "Failed to book slot", values: filledFields });
       }
 
     } catch (error) {
         console.error('Error updating document:', error);
-        return fail(400, { success: false, error: "Failed to process booking" });
+        return fail(400, { success: false, error: "Failed to process booking", values : filledFields });
     }
 
-    throw redirect(303, '/confirm');
+    return {success: true, message: 'Booking processed successfully'};
   },
 } satisfies Actions;
