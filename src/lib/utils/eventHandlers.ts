@@ -36,7 +36,7 @@ export const bookSlot = async (slot: Slot, fetchFn: typeof fetch) => {
     return data;
 };
 
-export const sendEmail = async (name: string, recipient: string, startTime: string, endTime: string) => {
+export const sendNotify = async (name: string, recipient: string, startTime: string, endTime: string) => {
     try {
         const templateID = 'template_ms7apnd'; // Service ID from EmailJS
         const publicKey = 'dLmCzZJKlKbV1UctL'; // Template ID from EmailJS

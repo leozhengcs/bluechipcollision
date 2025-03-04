@@ -191,15 +191,14 @@ export const actions = {
       if (missingFields.length > 0) {
         return fail(400, {
           success: false,
-          error: "Please fill out all required fields.", // TODO: Implement the custom errors here so that I can update form visually later.
-          missingFields,
+          error: "Please fill out all required fields.",
           values: filledFields
         });
       }
 
       if (!token) {
         console.log(token);
-        return { success: false, error: 'No token provided', values: filledFields }; 
+        return fail(400, { success: false, message: 'No token provided', values: filledFields }); 
       }
 
       try {
@@ -214,10 +213,10 @@ export const actions = {
 
           const data = await response.json();
           if (!data.success) {
-              return fail(400, { success: false, values: filledFields});
+            return fail(400, { success: false, message: "Error Verifying Captcha Token", values: filledFields});
           }
       } catch (error) {
-          return fail(400, { success: false, error: 'Captcha validation failed', values: filledFields });
+          return fail(400, { success: false, message: 'Captcha validation failed', values: filledFields });
       }
 
       // Trying to upload insurance form
@@ -229,7 +228,7 @@ export const actions = {
           console.log("Uploading insurance failed");
           return fail(400, {
             success: false, 
-            error: "File upload failed", 
+            message: "File upload failed", 
             values: filledFields
           });
         }
@@ -242,7 +241,7 @@ export const actions = {
             uploadedDamageFilesNames.push(fileName);
           } catch (err) {
             console.log("Uploading damages failed");
-            return fail(400, { success: false, error: "File upload failed", values: filledFields });
+            return fail(400, { success: false, message: "File upload failed", values: filledFields });
           }
         }
       }
@@ -296,12 +295,12 @@ VIN: ${vin || 'N/A'}
 
       if (res.status !== 200) {
         console.log("calendar insert failed");
-        return fail(500, { success: false, error: "Failed to book slot", values: filledFields });
+        return fail(500, { success: false, message: "Failed to book slot", values: filledFields });
       }
 
     } catch (error) {
         console.error('Error updating document:', error);
-        return fail(400, { success: false, error: "Failed to process booking", values : filledFields });
+        return fail(400, { success: false, message: "Failed to process booking", values : filledFields });
     }
 
     return {success: true, message: 'Booking processed successfully'};

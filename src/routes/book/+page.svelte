@@ -5,11 +5,12 @@
     import Dropdown from '$lib/components/Dropdown.svelte';
     import Radio from '$lib/components/Radio.svelte';
     import { get, writable } from 'svelte/store';
-    import { sendEmail, sendConfirm } from '$lib/utils/eventHandlers';
+    import { sendNotify, sendConfirm } from '$lib/utils/eventHandlers';
     import { onMount } from 'svelte';
     import { ReCaptcha } from '@mac-barrett/svelte-recaptcha';
     import { goto } from '$app/navigation';
-  import { enhance } from '$app/forms';
+    import { enhance } from '$app/forms';
+    import { Toaster, toast } from 'svelte-sonner';
 
     const SITE_KEY = '6Ld25eUqAAAAAHZNzbCIZ18u7royaZTdmzyDRsAU';
     let Captcha: ReCaptcha;
@@ -26,15 +27,17 @@
     const { form } = $props();
 
     onMount(() => {
-        if (form?.error) {
-            console.log("Error: ", form.error);
+        if (form && !form.success) {
+            console.log("Error: ", form.message);
+            toast(form.message || "Error");
         }
     })
         
-    let choiceResponse = $state('TEXT');
-    let choiceOperational = $state('NO');
-    let choiceCourtesyCar = $state('NO');
-    let privateRepair = $state(false);
+    let choiceResponse = $state(form?.values?.responsePref || 'TEXT');
+    let choiceOperational = $state(form?.values?.carOperational || 'NO');
+    let choiceCourtesyCar = $state(form?.values?.courtesyCar || 'NO');
+    let privateRepair = $state(!!form?.values?.privateRepair || false);
+    let vehicle = $state(form?.values?.vehicleType || 'CAR');
 
     // TODO: Add form validation for these parts.
     let selectedDate:null|FormDataEntryValue = $state(null);
@@ -52,9 +55,10 @@
     const responses = ['TEXT', 'EMAIL'];
     const carOperational = ['NO', 'YES'];
     const courtesyCar = ['NO', 'YES'];
+    const vehicleType = ['CAR', 'TRUCK', 'SUV', 'OTHER']
 
     async function sendEmails() {
-        // await sendEmail(name, email, startTime, endTime);
+        // await sendNotify(name, email, startTime, endTime);
         sendConfirm(name, email, startTime as string, endTime as string, selectedDate as string);
     }
 
@@ -157,7 +161,7 @@
 
         const formData = new FormData(event.target as HTMLFormElement);
         if (!token) {
-            console.error("Failed to retrieve reCAPTCHA token.");
+            toast.error("Please Complete Captcha")
             return;
         }
         formData.append('token', token);
@@ -166,7 +170,7 @@
         selectedFiles.forEach(file => formData.append("damagePhotos", file));
 
         if (!Captcha) {
-            console.error("ReCaptcha is not initialized. Peter");
+            toast.error("ReCaptcha is not initialized.");
             return;
         }
 
@@ -177,12 +181,16 @@
             });
 
             const result = await response.json();
+            console.log(result)
             // Add error handling here
-            if (response.ok) {
-                sendEmails();
-                goto('/confirm');
+            if (result.type === 'failure') {
+                const parsedData = JSON.parse(result.data);
+                if (parsedData[2]) {
+                    toast.error(parsedData[2]);
+                }
             } else {
-                console.error("Booking failed: ", result.error);
+                // sendEmails();
+                goto('/confirm');
             }
         } catch (error) {
             console.error("Error booking:", error);
@@ -191,6 +199,7 @@
 </script>
 
 <main class="bg-blue">
+    <Toaster richColors closeButton/>
     <section class='py-5'>
         <h1 class='mx-10 font-bold text-white text-2xl font-fontRoboto xl:mx-64 xl:pt-10'>REQUEST REPAIR ESTIMATE</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
@@ -307,6 +316,7 @@
                 <input type="checkbox" bind:checked={privateRepair} name='privateRepair' id='privateRepair' class='border-yellow mr-2'/>
                 <label for="privateRepair">Private Repair?</label>
             </div>
+            <Radio labelName='Vehicle Type' options={vehicleType} bind:ref={vehicle} label='vehicleType'/>
             <input type="hidden" name="token" bind:value={token}>
             <ReCaptcha bind:this={Captcha} { SITE_KEY } captchaStyle={{theme: 'dark', size: 'compact'}} />
             <input type="hidden" value={selectedDate} name='selectedDate'>
