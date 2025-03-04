@@ -185,7 +185,7 @@
 				onclick={() => handleNavigation('/faqs')}>
 				FAQs
 			</a>
-			<Button href="/book" {label} additionalStyling='xl:ml-2 lg:mr-5 xl:h-8 xl:w-auto xl:px-3'/>
+			<Button href="/book" {label} path='/book' additionalStyling='xl:ml-2 lg:mr-5 xl:h-8 xl:w-auto xl:px-3'/>
 			<div class="xl:hidden sm:block z-50">
 				<Hamburger --color='white' open={headerState.sidebar} onclick={toggleSidebar}/>
 			</div>

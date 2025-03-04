@@ -14,7 +14,7 @@ export function handleClickOutside(
 }
 
 export const handleNavigation = (newPath: string) => {
-  headerState.currentPath = newPath;
+    headerState.currentPath = newPath;
 }
 
 export const bookSlot = async (slot: Slot, fetchFn: typeof fetch) => {
