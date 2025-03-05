@@ -29,7 +29,7 @@
     onMount(() => {
         if (form && !form.success) {
             console.log("Error: ", form.message);
-            toast(form.message || "Error");
+            toast.error(form.message || "Error");
         }
     })
         
@@ -38,6 +38,7 @@
     let choiceCourtesyCar = $state(form?.values?.courtesyCar || 'NO');
     let privateRepair = $state(!!form?.values?.privateRepair || false);
     let vehicle = $state(form?.values?.vehicleType || 'CAR');
+    let choiceTowing = $state(form?.values?.choiceTowing || 'YES');
 
     // TODO: Add form validation for these parts.
     let selectedDate:null|FormDataEntryValue = $state(null);
@@ -54,6 +55,7 @@
     const carMakes = ["Toyota", 'Mazda', 'Honda'];
     const responses = ['TEXT', 'EMAIL'];
     const carOperational = ['NO', 'YES'];
+    const towing = ['NO', 'YES']
     const courtesyCar = ['NO', 'YES'];
     const vehicleType = ['CAR', 'TRUCK', 'SUV', 'OTHER']
 
@@ -312,11 +314,12 @@
             <Radio labelName='Car Operational?' options={carOperational} bind:ref={choiceOperational} label='carOperational'/>
             <Radio labelName='Courtesy Car?' options={courtesyCar} bind:ref={choiceCourtesyCar} label='courtesyCar'/>
             <Radio labelName='Choice of Reply' options={responses} bind:ref={choiceResponse} label='responsePref'/>
+            <Radio labelName='Vehicle Type' options={vehicleType} bind:ref={vehicle} label='vehicleType'/>
+            <Radio labelName='Require Towing?' options={towing} bind:ref={choiceTowing} label='towing'/>
             <div class='my-5'>
                 <input type="checkbox" bind:checked={privateRepair} name='privateRepair' id='privateRepair' class='border-yellow mr-2'/>
                 <label for="privateRepair">Private Repair?</label>
             </div>
-            <Radio labelName='Vehicle Type' options={vehicleType} bind:ref={vehicle} label='vehicleType'/>
             <input type="hidden" name="token" bind:value={token}>
             <ReCaptcha bind:this={Captcha} { SITE_KEY } captchaStyle={{theme: 'dark', size: 'compact'}} />
             <input type="hidden" value={selectedDate} name='selectedDate'>

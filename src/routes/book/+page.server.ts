@@ -146,7 +146,8 @@ export const actions = {
       const insuranceForm = data.get('insuranceForm');
       const registrationNum = data.get('registrationNum');
       const damageImages = data.getAll('damagePhotos');
-      const token = data.get("token") as string;
+      const token = data.get("token");
+      const towing = data.get('towing');
       let uploadedFileName = null;
       let uploadedDamageFilesNames: string[] = [];
 
@@ -170,7 +171,7 @@ export const actions = {
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // Validating Fields
+      // Check for missing fields
       let missingFields = [];
 
       if (!name) missingFields.push("Name");
@@ -187,18 +188,35 @@ export const actions = {
       else filledFields.date = date as string;
       if (!startTime) missingFields.push("Start Time");
       else filledFields.startTime = startTime as string;
+      if (!towing) missingFields.push('Towing');
+      else filledFields.choiceTowing = towing as string;
 
       if (missingFields.length > 0) {
         return fail(400, {
           success: false,
-          error: "Please fill out all required fields.",
+          message: "Please fill out all required fields.",
           values: filledFields
         });
       }
 
+      // Validate inputs
+      if (filledFields.vin.length != 17) {
+        return fail(400, {
+          success: false,
+          message: 'Invalid VIN Number',
+          values: filledFields
+        });
+      }
+
+      console.log("peter");
+
       if (!token) {
         console.log(token);
-        return fail(400, { success: false, message: 'No token provided', values: filledFields }); 
+        return fail(400, { 
+          success: false, 
+          message: 'No token provided', 
+          values: filledFields 
+        }); 
       }
 
       try {
