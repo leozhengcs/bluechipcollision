@@ -1,0 +1,32 @@
+[
+    {
+        "src": "/images/home-carousel/root-banner.jpg",
+        "alt": "Root banner photo 1",
+        "caption": "",
+        "description":""
+    },
+    {
+        "src":"/images/home-carousel/ai-generated-8367776_1280.jpg",
+        "alt":"Root banner photo 2",
+        "caption":"",
+        "description":""
+    },
+    {
+        "src":"/images/home-carousel/pexels-photo-8985602.jpeg",
+        "alt":"Root banner photo 3",
+        "caption":"",
+        "description":""
+    },
+    {
+        "src":"/images/home-carousel/pexels-photo-8985661.jpeg",
+        "alt":"Root banner photo 4",
+        "caption":"",
+        "description":""
+    },
+    {
+        "src":"/images/home-carousel/premium_photo-1682142496977-e3603401896f.jpeg",
+        "alt":"Root banner photo 5",
+        "caption":"",
+        "description":""
+    }
+]

@@ -2,13 +2,17 @@
     import Button from '$lib/components/Button.svelte';
     import Service from '$lib/components/Service.svelte';
     import Banner from '$lib/components/Banner.svelte';
-
+    
     import { footerState } from '../stores/footer.svelte';
     footerState.show = true
+    
+    import images from '$lib/imageData.json';
+    import Swiper from '$lib/components/Swiper.svelte';
 </script>
 
 <main class='w-full h-auto shadow-sm overflow-hidden bg-white'>
-    <Banner banner='bg-root-banner' title="Blue Chip Collision is Vancouver's top choice for automotive collision repair." styling='text-xs xl:left-32 xl:mb-10 2xl:left-64'/>
+    <!-- <Banner banner='bg-root-banner' title="Blue Chip Collision is Vancouver's top choice for automotive collision repair." styling='text-xs xl:left-32 xl:mb-10 2xl:left-64'/> -->
+     <Swiper {images}/>
     <p class="m-10 xl:mx-32 2xl:mx-64 xl:my-10 text-gray font-fontInter font-black xl:text-xl">
         With over 25 years of experience, our team delivers exceptional service and craftsmanship for all kind of vehicle repairs and restorations.
     </p>
