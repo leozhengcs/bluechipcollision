@@ -54,6 +54,9 @@
 		<a href="/" class='sm:w-1/3 h-auto mr-5 xl:w-[10%] 2xl:mx-5' onclick={() => handleNavigation('/')}>
 			<img src='/icons/logo.png' alt="Company Logo">
 		</a>
+		<div class="sm:w-1/3 h-auto mr-5 xl:w-[10%] 2xl:mx-5">
+			<img src="/images/icbcrepair.jpg" alt="">
+		</div>
 		<div class='xl:flex items-center h-full hidden gap-5'>
 			<div class='h-full flex justify-row items-center'>
 				<img src="/icons/telephone.png" alt="Phone" class='w-auto h-[35%] px-2'>

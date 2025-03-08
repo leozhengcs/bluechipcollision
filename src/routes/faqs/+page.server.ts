@@ -16,7 +16,7 @@ export const actions = {
         }
 
         if (!token) {
-            return fail(400, { success: false, error: 'No token provided', values: form });
+            return { success: false, error: 'No token provided', values: form }; 
         }
 
         try {
@@ -35,7 +35,7 @@ export const actions = {
             if (data.success) {
                 return { success: true, values: form};
             } else {
-                return fail(400, { success: false, error: data['error-codes'], values: form });
+                return fail(400, {success: false, error: data['error-codes'], values: form });
             }
         } catch (error) {
             return fail(400,{ success: false, error: 'Captcha validation failed', values: form });

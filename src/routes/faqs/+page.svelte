@@ -1,19 +1,52 @@
 <script lang='ts'>
     import Banner from '$lib/components/Banner.svelte';
+    import { ReCaptcha } from '@mac-barrett/svelte-recaptcha';
     import { onMount } from 'svelte';
-    import { getRandomInt } from '$lib/utils/mathUtils';
-
-    let num1: number;
-    let num2: number;
-    let res: number;
-    onMount(() => {
-        num1 = getRandomInt(1, 10);
-        num2 = getRandomInt(1, 10);
-        res = num1 + num2;
-    })
+    import { sendContact } from '$lib/utils/eventHandlers';
 
     import { footerState } from '../../stores/footer.svelte';
     footerState.show = true
+
+    const SITE_KEY = '6Ld25eUqAAAAAHZNzbCIZ18u7royaZTdmzyDRsAU';
+    let Captcha: ReCaptcha;
+    let token = $state(''); // Store the ReCaptcha token  
+
+    let {
+        form
+    } = $props();
+
+    let name = $state('');
+    let email = $state('');
+    let subject = $state('');
+    let content = $state('');
+
+    onMount(() => {
+        if (form?.error) {
+            if (form.values?.name) {
+                name = form.values.name as string
+            }
+            if (form.values?.email) {
+                email = form.values.email as string
+            }
+            if (form.values?.subject) {
+                subject = form.values.subject as string
+            }
+            if (form.values?.content) {
+                content = form.values.content as string
+            }
+        }
+
+        if (form?.success) {
+            sendContact(
+                form.values.name as string, 
+                form.values.email as string, 
+                form.values.subject as string, 
+                form.values.content as string
+            );
+
+            // User feedback
+        }
+    });
 </script>
 
 <main class='bg-blue'>
@@ -43,12 +76,13 @@
         <h1 class='pt-5 mx-10 xl:mx-64 font-bold text-blue text-2xl font-fontRoboto sm:text-xl xl:text-3xl xl:pt-10'>HAVE YOUR OWN QUESTIONS?</h1>
         <hr class='bg-yellow h-[2px] border-0 x-10 xl:ml-64'/>
         <form action="" class='mx-10 py-5 xl:mx-64'>
-            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="Name*">
-            <input type="email" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="Email Address*">
-            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="Subject*">
-            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full min-h-[15vh] placeholder:absolute placeholder:top-3' placeholder="Message*">
-            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="{num1} + {num2} = ?*">
-            <button class='bg-blue p-2 text-white font-fontInter font-bold text-sm'>Send Message</button>
+            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="Name" bind:value={name}>
+            <input type="email" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="Email Address" bind:value={email}>
+            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full' placeholder="Subject" bind:value={subject}>
+            <input type="text" class='border-0 border-b-2 mb-5 border-yellow bg-blue w-full min-h-[15vh] placeholder:absolute placeholder:top-3' placeholder="Message" bind:value={content}>
+            <input type="hidden" name="token" bind:value={token}>
+            <ReCaptcha bind:this={Captcha} { SITE_KEY } captchaStyle={{theme: 'dark', size: 'compact'}} />
+            <button class='bg-blue p-2 text-white font-fontInter font-bold text-sm'>Send Message</button>            
         </form>
     </section>
 </main>

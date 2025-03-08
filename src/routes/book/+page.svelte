@@ -315,7 +315,7 @@
             <Radio labelName='Courtesy Car?' options={courtesyCar} bind:ref={choiceCourtesyCar} label='courtesyCar'/>
             <Radio labelName='Choice of Reply' options={responses} bind:ref={choiceResponse} label='responsePref'/>
             <Radio labelName='Vehicle Type' options={vehicleType} bind:ref={vehicle} label='vehicleType'/>
-            <Radio labelName='Require Towing?' options={towing} bind:ref={choiceTowing} label='towing'/>
+            <Radio labelName='Require Towing? (Extra Charge)' options={towing} bind:ref={choiceTowing} label='towing'/>
             <div class='my-5'>
                 <input type="checkbox" bind:checked={privateRepair} name='privateRepair' id='privateRepair' class='border-yellow mr-2'/>
                 <label for="privateRepair">Private Repair?</label>

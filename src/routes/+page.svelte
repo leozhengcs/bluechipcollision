@@ -11,8 +11,8 @@
 </script>
 
 <main class='w-full h-auto shadow-sm overflow-hidden bg-white'>
-    <!-- <Banner banner='bg-root-banner' title="Blue Chip Collision is Vancouver's top choice for automotive collision repair." styling='text-xs xl:left-32 xl:mb-10 2xl:left-64'/> -->
-     <Swiper {images}/>
+    <!-- Header Carousel -->
+    <Swiper {images}/> 
     <p class="m-10 xl:mx-32 2xl:mx-64 xl:my-10 text-gray font-fontInter font-black xl:text-xl">
         With over 25 years of experience, our team delivers exceptional service and craftsmanship for all kind of vehicle repairs and restorations.
     </p>
@@ -25,6 +25,7 @@
         <Service src='/icons/technician.png' label='Certified Collision Repair'/>
         <Service src='/icons/car-door.png' label='Door & Panel Replacement'/>
         <Service src='/icons/spray.png' label='Painting Services'/>
+        <Service src='/icons/spray.png' label='Auto Glass Service'/>
     </section>
     
     <div class='bg-blue w-full py-12'>
