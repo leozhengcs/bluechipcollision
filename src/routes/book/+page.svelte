@@ -27,6 +27,7 @@
     const { form } = $props();
 
     onMount(() => {
+        token = '';
         if (form && !form.success) {
             console.log("Error: ", form.message);
             toast.error(form.message || "Error");
@@ -156,17 +157,28 @@
         if (fileInput) {
             fileInput.value = "";
         }    
-}
+    }
 
     async function handleSubmit(event: Event) {
-        token = Captcha.getRecaptchaResponse();  
+        event.preventDefault();
+        token = Captcha.getRecaptchaResponse(); 
+        if (!token) {
+		    toast.error("Please complete Captcha");
+		    return;
+	    }
+
+        // Manual injection of token
+        const tokenInput = document.querySelector('input[name="token"]') as HTMLInputElement;
+        if (tokenInput) tokenInput.value = token;
 
         const formData = new FormData(event.target as HTMLFormElement);
+        formData.append("token", token); // Optional: backup append
+
         if (!token) {
             toast.error("Please Complete Captcha")
             return;
         }
-        formData.append('token', token);
+
         const selectedFiles = get(fileDamages);
 
         selectedFiles.forEach(file => formData.append("damagePhotos", file));
@@ -183,7 +195,6 @@
             });
 
             const result = await response.json();
-            console.log(result)
             // Add error handling here
             if (result.type === 'failure') {
                 const parsedData = JSON.parse(result.data);
@@ -218,7 +229,7 @@
     <section class="bg-white pb-16">
         <h1 class='ml-10 font-bold text-blue text-2xl font-fontRoboto pt-5 xl:mx-64'>BOOK APPOINTMENT</h1>
         <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-64'/>
-        <form method="POST" class='mx-10 mt-5 xl:mx-64' enctype="multipart/form-data" onsubmit={handleSubmit} use:enhance>
+        <form method="POST" class='mx-10 mt-5 xl:mx-64' enctype="multipart/form-data" onsubmit={handleSubmit}>
             <SimpleInput bind:field={name} label='name' labelName="Name" type='text'/>
             <SimpleInput bind:field={phoneNum} label='phoneNum' labelName="Phone Num" type='number'/> <!-- TODO: Implement phone number formatting here-->
             <SimpleInput bind:field={email} label='email' labelName="Email" type='text'/>

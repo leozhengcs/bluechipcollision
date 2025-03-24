@@ -21,11 +21,11 @@
     <hr class='bg-yellow h-[2px] border-0 ml-10 xl:ml-32 2xl:ml-64'/>
     <section class="mt-5 ml-10 xl:mx-32 2xl:mx-64 xl:mb-5 flex flex-col w-full h-auto">
         <!-- TODO: Adjust these icons -->
-        <Service src="/icons/body-repair.png" label="Dent & Scratch Removal"/>
-        <Service src='/icons/technician.png' label='Certified Collision Repair'/>
-        <Service src='/icons/car-door.png' label='Door & Panel Replacement'/>
-        <Service src='/icons/spray.png' label='Painting Services'/>
-        <Service src='/icons/spray.png' label='Auto Glass Service'/>
+        <Service src="/icons/Car_Dent.png" label="Dent & Scratch Removal"/>
+        <Service src='/icons/Certified_Technician.png' label='Certified Collision Repair'/>
+        <Service src='/icons/Car_Panel.png' label='Door & Panel Replacement'/>
+        <Service src='/icons/Spray_Paint.png' label='Painting Services'/>
+        <Service src='/icons/Auto_Glass.png' label='Auto Glass Service'/>
     </section>
     
     <div class='bg-blue w-full py-12'>

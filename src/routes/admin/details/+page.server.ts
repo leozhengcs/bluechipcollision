@@ -1,5 +1,4 @@
-import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { db } from '$lib/firebase';
+import { adminDB } from '$lib/firebaseAdmin';
 import type { PageServerLoad, Actions } from './$types';
 import { createClient } from "@supabase/supabase-js";
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
@@ -32,11 +31,12 @@ export const load: PageServerLoad = async ({ url }) => {
     }
 
     try {
-        const docRef = doc(db, 'forms', documentId);
-        const docSnap = await getDoc(docRef);
+        const docRef = adminDB.collection('forms').doc(documentId);
+        const docSnap = await docRef.get();
 
-        if (docSnap.exists()) {
-            const formURL = await getSignedUrl(docSnap.data().insuranceForm)
+        if (docSnap.exists) {
+            const formData = docSnap.data();
+            const formURL = await getSignedUrl(formData?.insuranceForm);
             return { id: docSnap.id, imageURL: formURL.data?.signedUrl, ...docSnap.data() as FormData };
         } else {
             // Document does not exist
@@ -64,9 +64,9 @@ export const actions = {
                 throw new Error('docId is required and must be a valid string');
             }
 
-            const docRef = doc(db, 'forms', docId);
+            const docRef = adminDB.collection('forms').doc(docId);
+            await docRef.update({ carMake, name, phoneNum, email, vin });
 
-            await updateDoc(docRef, { carMake, name, phoneNum, email, vin })
             console.log("Document Updated");
         } catch (error) {
             console.error("Error updating document:", error);

@@ -6,6 +6,7 @@ import { google } from "googleapis";
 import { supabase } from '$lib/supabase';
 import { isEmpty } from '$lib/utils/stringHandlers';
 import { RECAPTCHA_SECRET } from '$env/static/private';
+import type { Slot } from '$lib/types/calendar';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png'];
@@ -130,12 +131,14 @@ async function handleFileUploadDamages(file: File) {
 }
 
 export const actions = {
-  default: async ({ request }) => {
+  default: async ({ request, fetch }) => {
     if (request.method !== 'POST') return;
     let filledFields: Record<string, string> = {};
 
     try {
       const data = await request.formData();
+      const token = data.get("token");
+      console.log("Live token:\n\n", token);
       const carMake = data.get('make');
       const name = data.get('name');
       const phoneNum = data.get('phoneNum');
@@ -146,7 +149,6 @@ export const actions = {
       const insuranceForm = data.get('insuranceForm');
       const registrationNum = data.get('registrationNum');
       const damageImages = data.getAll('damagePhotos');
-      const token = data.get("token");
       const towing = data.get('towing');
       let uploadedFileName = null;
       let uploadedDamageFilesNames: string[] = [];
@@ -208,15 +210,14 @@ export const actions = {
         });
       }
 
-      console.log("peter");
-
+      console.log(token)
       if (!token) {
-        console.log(token);
+        console.log("Token: ", token);
         return fail(400, { 
           success: false, 
-          message: 'No token provided', 
-          values: filledFields 
-        }); 
+          message: 'No token provided',
+          values: filledFields
+        });
       }
 
       try {
@@ -235,6 +236,23 @@ export const actions = {
           }
       } catch (error) {
           return fail(400, { success: false, message: 'Captcha validation failed', values: filledFields });
+      }
+
+      // Check the calendar one last time to see if the booking is taken
+      const slotRes = await fetch('/book/slots');
+      const slots = await slotRes.json() as Slot[];
+      let dateAvailable = false;
+      // Check if the booking is still available
+      for (let i = 0; i < slots.length; i++) {
+        // console.log(slots[i])
+        if (new Date(slots[i].start) === new Date(`${date}T${startTime}:00`)) {
+          console.log("Date found");
+          dateAvailable = true;
+        }
+      }
+
+      if (!dateAvailable) {
+        return fail(400, { success: 400, message: "Date is already taken, please try again!", values: filledFields });
       }
 
       // Trying to upload insurance form
@@ -264,18 +282,18 @@ export const actions = {
         }
       }
 
-      await addDoc(collection(db, 'forms'), {
-        carMake,
-        name,
-        phoneNum,
-        email,
-        vin,
-        responsePref,
-        status,
-        insuranceForm: uploadedFileName || null,
-        registrationNum: registrationNum,
-        damageImages: uploadedDamageFilesNames,
-      });
+      // await addDoc(collection(db, 'forms'), {
+      //   carMake,
+      //   name,
+      //   phoneNum,
+      //   email,
+      //   vin,
+      //   responsePref,
+      //   status,
+      //   insuranceForm: uploadedFileName || null,
+      //   registrationNum: registrationNum,
+      //   damageImages: uploadedDamageFilesNames,
+      // });
 
       startTime = formatTime(startTime as string);
       endTime = formatTime(endTime as string);
@@ -306,15 +324,15 @@ VIN: ${vin || 'N/A'}
 
       const calendar = google.calendar({ version: 'v3', auth });
 
-      const res = await calendar.events.insert({
-        calendarId: process.env.GOOGLE_CALENDAR_ID,
-        requestBody: event,
-      });
+      // const res = await calendar.events.insert({
+      //   calendarId: process.env.GOOGLE_CALENDAR_ID,
+      //   requestBody: event,
+      // });
 
-      if (res.status !== 200) {
-        console.log("calendar insert failed");
-        return fail(500, { success: false, message: "Failed to book slot", values: filledFields });
-      }
+      // if (res.status !== 200) {
+      //   console.log("calendar insert failed");
+      //   return fail(500, { success: false, message: "Failed to book slot", values: filledFields });
+      // }
 
     } catch (error) {
         console.error('Error updating document:', error);
