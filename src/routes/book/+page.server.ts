@@ -4,7 +4,7 @@ import { db } from '$lib/firebase';
 import { fail } from '@sveltejs/kit';
 import { google } from "googleapis";
 import { supabase } from '$lib/supabase';
-import { isEmpty } from '$lib/utils/stringHandlers';
+import { isEmpty, convertTo24Hours } from '$lib/utils/stringHandlers';
 import { RECAPTCHA_SECRET } from '$env/static/private';
 import type { Slot } from '$lib/types/calendar';
 
@@ -138,7 +138,6 @@ export const actions = {
     try {
       const data = await request.formData();
       const token = data.get("token");
-      console.log("Live token:\n\n", token);
       const carMake = data.get('make');
       const name = data.get('name');
       const phoneNum = data.get('phoneNum');
@@ -244,13 +243,17 @@ export const actions = {
       let dateAvailable = false;
       // Check if the booking is still available
       for (let i = 0; i < slots.length; i++) {
+        console.log("Booking Time: ", new Date(`${date}T${convertTo24Hours(startTime as string)}:00`).getTime());
+        console.log("Available Time: ", new Date(slots[i].start))
+        console.log(new Date(slots[i].start) == new Date(`${date}T${convertTo24Hours(startTime as string)}:00`));
         // console.log(slots[i])
-        if (new Date(slots[i].start) === new Date(`${date}T${startTime}:00`)) {
+        if (new Date(slots[i].start).getTime() == new Date(`${date}T${convertTo24Hours(startTime as string)}:00`).getTime()) {
           console.log("Date found");
           dateAvailable = true;
         }
       }
 
+      console.log("Date available? ", dateAvailable);
       if (!dateAvailable) {
         return fail(400, { success: 400, message: "Date is already taken, please try again!", values: filledFields });
       }
@@ -282,18 +285,19 @@ export const actions = {
         }
       }
 
-      // await addDoc(collection(db, 'forms'), {
-      //   carMake,
-      //   name,
-      //   phoneNum,
-      //   email,
-      //   vin,
-      //   responsePref,
-      //   status,
-      //   insuranceForm: uploadedFileName || null,
-      //   registrationNum: registrationNum,
-      //   damageImages: uploadedDamageFilesNames,
-      // });
+      // Add booking document into the firestore
+      await addDoc(collection(db, 'forms'), {
+        carMake,
+        name,
+        phoneNum,
+        email,
+        vin,
+        responsePref,
+        status,
+        insuranceForm: uploadedFileName || null,
+        registrationNum: registrationNum,
+        damageImages: uploadedDamageFilesNames,
+      });
 
       startTime = formatTime(startTime as string);
       endTime = formatTime(endTime as string);
@@ -324,15 +328,16 @@ VIN: ${vin || 'N/A'}
 
       const calendar = google.calendar({ version: 'v3', auth });
 
-      // const res = await calendar.events.insert({
-      //   calendarId: process.env.GOOGLE_CALENDAR_ID,
-      //   requestBody: event,
-      // });
+      // Add the event into the calendar
+      const res = await calendar.events.insert({
+        calendarId: process.env.GOOGLE_CALENDAR_ID,
+        requestBody: event,
+      });
 
-      // if (res.status !== 200) {
-      //   console.log("calendar insert failed");
-      //   return fail(500, { success: false, message: "Failed to book slot", values: filledFields });
-      // }
+      if (res.status !== 200) {
+        console.log("calendar insert failed");
+        return fail(500, { success: false, message: "Failed to book slot", values: filledFields });
+      }
 
     } catch (error) {
         console.error('Error updating document:', error);
