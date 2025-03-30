@@ -1,10 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-
+  import { SyncLoader } from 'svelte-loading-spinners';
   import type { Slot, SlotsByDate } from '$lib/types/calendar';
 
   let slots: Slot[] = $state([]);
   let slotsByDate: SlotsByDate = $state({});
+  let loading = $state(false);
 
   const today = new Date();
   let currentYear = $state(today.getFullYear());
@@ -33,8 +34,8 @@
     }
   }
 
-
   onMount(async () => {
+    loading = true;
     generateDays(currentYear, currentMonth);
 
     const res = await fetch('/book/slots');
@@ -47,9 +48,17 @@
       acc[date].push(slot);
       return acc;
     }, {});
+
+    // Automatically select today's date and populate times
+    const todayDateStr = today.toISOString().split('T')[0];
+    selectedDate = todayDateStr;
+    getTimes(todayDateStr);
+    loading = false;
   });
 
+
   function getTimes(date: string): void {
+    loading = true;
     availableTimes = [];
     if (!slotsByDate[date]) {
       return;
@@ -80,16 +89,20 @@
       end: formatTime(endDate),     // Format end time in local time
     } as Slot);
     });
+    loading = false;
+    availableTimes = [...availableTimes]; // Trigger recomposition
   }
 
 
   function selectDay(day: number | null): void {
+    loading = true;
     if (day) {
       const selectedDay = new Date(currentYear, currentMonth, day);
       selectedDate = selectedDay.toISOString().slice(0, 10);
       getTimes(selectedDate);
       startTime = null;
     }
+    loading = false;
   }
 
   function selectTime(time: Slot | null): void {
@@ -100,6 +113,7 @@
   }
 
   function prevMonth(): void {
+    loading = true;
     if (currentMonth === 0) {
       currentMonth = 11;
       currentYear--;
@@ -108,9 +122,11 @@
     }
     generateDays(currentYear, currentMonth);
     selectedDate = null; // Reset selected day
+    loading = false;
   }
 
   function nextMonth(): void {
+    loading = true;
     if (currentMonth === 11) {
       currentMonth = 0;
       currentYear++;
@@ -119,8 +135,10 @@
     }
     generateDays(currentYear, currentMonth);
     selectedDate = null; // Reset selected day
+    loading = false;
   }
 </script>
+
 
 <div class="grid grid-rows-1 grid-cols-2">
   <div class='flex flex-col items-center space-y-4 col-start-1 col-end-2'>
@@ -183,6 +201,10 @@
         {/each}
       {:else}
         <div>No day selected</div>
+      {/if}
+
+      {#if loading }
+        <SyncLoader color='white'/>
       {/if}
     </div>
   </div>
