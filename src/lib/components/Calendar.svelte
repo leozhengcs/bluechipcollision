@@ -7,6 +7,8 @@
   let slotsByDate: SlotsByDate = $state({});
   let loading = $state(false);
 
+  $inspect(loading);
+
   const today = new Date();
   let currentYear = $state(today.getFullYear());
   let currentMonth = $state(today.getMonth());
@@ -35,7 +37,6 @@
   }
 
   onMount(async () => {
-    loading = true;
     generateDays(currentYear, currentMonth);
 
     const res = await fetch('/book/slots');
@@ -48,16 +49,10 @@
       acc[date].push(slot);
       return acc;
     }, {});
-
-    // Automatically select today's date and populate times
-    const todayDateStr = today.toISOString().split('T')[0];
-    selectedDate = todayDateStr;
-    getTimes(todayDateStr);
-    loading = false;
   });
 
 
-  function getTimes(date: string): void {
+  async function getTimes(date: string): void {
     loading = true;
     availableTimes = [];
     if (!slotsByDate[date]) {
@@ -83,26 +78,31 @@
     // Sort times based on local `startDate` by hours.
     const sortedTimes = unsortedTimes.sort((a, b) => a.startDate.getHours() - b.startDate.getHours());
 
+    function wait(ms: number) {
+      return new Promise(resolve => setTimeout(resolve, ms))
+    }
+    
+    loading = false;
+
     sortedTimes.forEach(({ startDate, endDate }) => {
     availableTimes.push({
       start: formatTime(startDate), // Format start time in local time
       end: formatTime(endDate),     // Format end time in local time
     } as Slot);
     });
-    loading = false;
+
+
     availableTimes = [...availableTimes]; // Trigger recomposition
   }
 
 
   function selectDay(day: number | null): void {
-    loading = true;
     if (day) {
       const selectedDay = new Date(currentYear, currentMonth, day);
       selectedDate = selectedDay.toISOString().slice(0, 10);
       getTimes(selectedDate);
       startTime = null;
     }
-    loading = false;
   }
 
   function selectTime(time: Slot | null): void {
