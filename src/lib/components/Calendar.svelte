@@ -52,7 +52,7 @@
   });
 
 
-  async function getTimes(date: string): void {
+  async function getTimes(date: string) {
     loading = true;
     availableTimes = [];
     if (!slotsByDate[date]) {
@@ -81,7 +81,7 @@
     function wait(ms: number) {
       return new Promise(resolve => setTimeout(resolve, ms))
     }
-    
+
     loading = false;
 
     sortedTimes.forEach(({ startDate, endDate }) => {
@@ -90,7 +90,6 @@
       end: formatTime(endDate),     // Format end time in local time
     } as Slot);
     });
-
 
     availableTimes = [...availableTimes]; // Trigger recomposition
   }
@@ -140,8 +139,8 @@
 </script>
 
 
-<div class="grid grid-rows-1 grid-cols-2">
-  <div class='flex flex-col items-center space-y-4 col-start-1 col-end-2'>
+<div class="grid grid-rows-1 grid-cols-2 md:grid-rows-2 md:grid-cols-1">
+  <div class='flex flex-col items-center space-y-4 col-start-auto col-end-auto'>
     <div class="flex items-center justify-between w-full max-w-xs">
       <button
         onclick={prevMonth}
@@ -186,7 +185,7 @@
     </div>
   </div>
 
-  <div class='text-white col-start-2 col-end-3 w-full flex flex-col items-center'>
+  <div class='text-white col-start-auto col-end-auto w-full flex flex-col items-center'>
     <strong class="font-fontInter text-lg font-semibold text-white py-1">Available Times</strong>
     <div class="flex flex-wrap gap-5 justify-center" id='available-times'>
       {#if selectedDate}

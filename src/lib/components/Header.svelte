@@ -50,13 +50,13 @@
 	
 
 <header class='sticky top-0 left-0 bg-blue sm:pt-6 xl:pt-0 w-full shadow-sm shadow-black z-50 overflow-x-hidden h-20 flex justify-center'>
-	<nav class='flex justify-between items-center p-2 z-50'>
-		<a href="/" class='sm:w-1/3 h-auto mr-5 xl:w-[10%] 2xl:mx-5' onclick={() => handleNavigation('/')}>
+	<nav class='flex justify-between items-center p-2 z-50 w-full'>
+		<a href="/" class='w-24 h-auto mr-5 md:w-36 2xl:mx-5' onclick={() => handleNavigation('/')}>
 			<img src='/icons/logo.png' alt="Company Logo">
 		</a>
-		<div class="sm:w-1/3 h-auto mr-5 xl:w-[10%] 2xl:mx-5">
+		<!-- <div class="sm:w-1/3 h-auto mr-5 xl:w-[10%] 2xl:mx-5">
 			<img src="/images/icbcrepair.jpg" alt="">
-		</div>
+		</div> -->
 		<div class='xl:flex items-center h-full hidden gap-5'>
 			<div class='h-full flex justify-row items-center'>
 				<img src="/icons/telephone.png" alt="Phone" class='w-auto h-[35%] px-2'>
