@@ -139,8 +139,8 @@
 </script>
 
 
-<div class="grid grid-rows-1 grid-cols-2 md:grid-rows-2 md:grid-cols-1">
-  <div class='flex flex-col items-center space-y-4 col-start-auto col-end-auto'>
+<div class="grid grid-rows-2 grid-cols-1 lg:grid-rows-1 lg:grid-cols-2">
+  <div class='flex flex-col items-center space-y-4 col-start-auto col-end-auto mb-5 lg:mb-0'>
     <div class="flex items-center justify-between w-full max-w-xs">
       <button
         onclick={prevMonth}
@@ -160,7 +160,7 @@
     </div>
   
     <!-- Calendar grid -->
-    <div class="grid grid-cols-7 gap-2 w-full max-w-xs">
+    <div class="grid grid-cols-7 gap-2 w-full max-w-xs mb-10 lg:mb-0">
       <!-- Days of the week -->
       {#each daysOfWeek as day}
         <div class="text-center font-semibold text-white hover:cursor-default">{day}</div>
